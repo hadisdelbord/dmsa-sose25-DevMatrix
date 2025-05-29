@@ -1,52 +1,54 @@
 <template>
-  <div align="center" style="margin-top: 80px">
-    <table cellpadding="50" cellspacing="0" style="border: 1px solid black; border-radius: 8px">
-      <tr>
-        <td>
-          <form @submit.prevent="loginUser">
-            <table cellpadding="10" cellspacing="0">
-              <tr>
-                <td colspan="2" align="center">
-                  <h2>User Login</h2>
-                </td>
-              </tr>
-              <tr>
-                <td align="left"><b>Email:</b></td>
-                <td align="left">
-                  <input v-model="email" type="email" required />
-                </td>
-              </tr>
-              <tr>
-                <td align="left"><b>Password:</b></td>
-                <td align="left">
-                  <input v-model="password" type="password" required />
-                </td>
-              </tr>
-              <tr>
-                <td colspan="2" align="center">
-                  <button type="submit">Login</button>
-                </td>
-              </tr>
-              <tr v-if="message">
-                <td colspan="2" align="center">
-                  <p>{{ message }}</p>
-                </td>
-              </tr>
-              <tr>
-                <td colspan="2" align="center">
-                  <p>Don't have an account? <a href="/register">Register</a></p>
-                </td>
-              </tr>
-            </table>
-          </form>
-        </td>
-      </tr>
-    </table>
+  <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh">
+    <div class="card shadow p-4" style="width: 100%; max-width: 400px">
+      <h3 class="text-center mb-4">User Login</h3>
+
+      <form @submit.prevent="loginUser">
+        <div class="mb-3">
+          <label for="email" class="form-label"><strong>Email</strong></label>
+          <input
+            v-model="email"
+            type="email"
+            class="form-control"
+            id="email"
+            placeholder="Enter your email"
+            required
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="password" class="form-label"><strong>Password</strong></label>
+          <input
+            v-model="password"
+            type="password"
+            class="form-control"
+            id="password"
+            placeholder="Enter your password"
+            required
+          />
+        </div>
+
+        <div class="d-grid">
+          <button type="submit" class="btn btn-primary">Login</button>
+        </div>
+      </form>
+
+      <div v-if="message" class="alert alert-info mt-3 text-center">
+        {{ message }}
+      </div>
+
+      <div class="text-center mt-3">
+        <p class="mb-0">
+          Don't have an account?
+          <a href="/register" class="text-decoration-none">Register</a>
+        </p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios'
+import axios from 'axios';
 
 export default {
   data() {
@@ -54,7 +56,7 @@ export default {
       email: '',
       password: '',
       message: '',
-    }
+    };
   },
   methods: {
     async loginUser() {
@@ -62,12 +64,12 @@ export default {
         const response = await axios.post('http://localhost:8080/users/login', {
           email: this.email,
           password: this.password,
-        })
-        this.message = `Welcome ${response.data.name}!`
+        });
+        this.message = `Welcome ${response.data.name}!`;
       } catch (error) {
-        this.message = error.response?.data?.message || 'Login failed.'
+        this.message = error.response?.data?.message || 'Login failed.';
       }
     },
   },
-}
+};
 </script>
