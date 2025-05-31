@@ -22,23 +22,11 @@
         <div class="mb-3">
           <label class="form-label d-block"><strong>Role <span class="text-danger">*</span></strong></label>
           <div class="form-check form-check-inline">
-            <input
-              class="form-check-input"
-              type="radio"
-              id="driver"
-              value="DRIVER"
-              v-model="role"
-            />
+            <input class="form-check-input" type="radio" id="driver" value="DRIVER" v-model="role" />
             <label class="form-check-label" for="driver">Driver</label>
           </div>
           <div class="form-check form-check-inline">
-            <input
-              class="form-check-input"
-              type="radio"
-              id="owner"
-              value="OWNER"
-              v-model="role"
-            />
+            <input class="form-check-input" type="radio" id="owner" value="OWNER" v-model="role" />
             <label class="form-check-label" for="owner">Owner</label>
           </div>
         </div>
@@ -48,7 +36,16 @@
         </div>
       </form>
 
-      <div v-if="message" class="alert alert-info text-center mt-3">
+      <!-- ✅ Polished Message Display -->
+      <div
+        v-if="message"
+        :class="[
+          'alert',
+          success ? 'alert-success' : 'alert-danger',
+          'text-center',
+          'mt-3'
+        ]"
+      >
         {{ message }}
       </div>
 
@@ -73,6 +70,7 @@ export default {
       password: '',
       role: 'DRIVER',
       message: '',
+      success: false,
     };
   },
   methods: {
@@ -85,8 +83,10 @@ export default {
           role: this.role,
         });
         this.message = 'Registration successful!';
+        this.success = true;
       } catch (error) {
         this.message = error.response?.data?.message || 'Registration failed.';
+        this.success = false;
       }
     },
   },
