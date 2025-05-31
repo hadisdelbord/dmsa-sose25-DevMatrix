@@ -1,76 +1,66 @@
 <template>
-  <div align="center" style="margin-top: 80px">
-    <table cellpadding="50" cellspacing="0" style="border: 1px solid black; border-radius: 8px">
-      <tr>
-        <td>
-          <form @submit.prevent="registerUser">
-            <table cellpadding="10" cellspacing="0">
-              <tr>
-                <td colspan="2" align="center">
-                  <h2>User Registration</h2>
-                </td>
-              </tr>
-              <tr>
-                <td align="left">
-                  <b>Name: <span style="color: red">*</span></b>
-                </td>
-                <td align="left">
-                  <input v-model="name" type="text" />
-                </td>
-              </tr>
-              <tr>
-                <td align="left">
-                  <b>Email: <span style="color: red">*</span></b>
-                </td>
-                <td align="left">
-                  <input v-model="email" type="email" required />
-                </td>
-              </tr>
-              <tr>
-                <td align="left">
-                  <b>Password: <span style="color: red">*</span></b>
-                </td>
-                <td align="left">
-                  <input v-model="password" type="password" required />
-                </td>
-              </tr>
-              <tr>
-                <td align="left">
-                  <b>Role: <span style="color: red">*</span></b>
-                </td>
-                <td align="left">
-                  <input type="radio" id="driver" value="DRIVER" v-model="role" />
-                  <label for="driver"><b>Driver</b></label
-                  ><br />
-                  <input type="radio" id="owner" value="OWNER" v-model="role" />
-                  <label for="owner"><b>Owner</b></label>
-                </td>
-              </tr>
-              <tr>
-                <td colspan="2" align="center">
-                  <button type="submit">Register</button>
-                </td>
-              </tr>
-              <tr v-if="message">
-                <td colspan="2" align="center">
-                  <p>{{ message }}</p>
-                </td>
-              </tr>
-              <tr>
-                <td colspan="2" align="center">
-                  <p>Already have an account? <a href="/login">Login</a></p>
-                </td>
-              </tr>
-            </table>
-          </form>
-        </td>
-      </tr>
-    </table>
+  <div class="container d-flex justify-content-center align-items-center" style="min-height: 85vh">
+    <div class="card shadow p-4" style="width: 100%; max-width: 500px">
+      <h3 class="text-center mb-4">User Registration</h3>
+
+      <form @submit.prevent="registerUser">
+        <div class="mb-3">
+          <label class="form-label"><strong>Name <span class="text-danger">*</span></strong></label>
+          <input v-model="name" type="text" class="form-control" placeholder="Enter your name" required />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label"><strong>Email <span class="text-danger">*</span></strong></label>
+          <input v-model="email" type="email" class="form-control" placeholder="Enter your email" required />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label"><strong>Password <span class="text-danger">*</span></strong></label>
+          <input v-model="password" type="password" class="form-control" placeholder="Enter your password" required />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label d-block"><strong>Role <span class="text-danger">*</span></strong></label>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" id="driver" value="DRIVER" v-model="role" />
+            <label class="form-check-label" for="driver">Driver</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" id="owner" value="OWNER" v-model="role" />
+            <label class="form-check-label" for="owner">Owner</label>
+          </div>
+        </div>
+
+        <div class="d-grid">
+          <button type="submit" class="btn btn-success">Register</button>
+        </div>
+      </form>
+
+      <!-- ✅ Polished Message Display -->
+      <div
+        v-if="message"
+        :class="[
+          'alert',
+          success ? 'alert-success' : 'alert-danger',
+          'text-center',
+          'mt-3'
+        ]"
+      >
+        {{ message }}
+      </div>
+
+      <div class="text-center mt-3">
+        <p class="mb-0">
+          Already have an account?
+          <a href="/login" class="text-decoration-none">Login</a>
+        </p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios'
+import axios from 'axios';
 
 export default {
   data() {
@@ -80,7 +70,8 @@ export default {
       password: '',
       role: 'DRIVER',
       message: '',
-    }
+      success: false,
+    };
   },
   methods: {
     async registerUser() {
@@ -90,12 +81,14 @@ export default {
           email: this.email,
           password: this.password,
           role: this.role,
-        })
-        this.message = 'Registration successful!'
+        });
+        this.message = 'Registration successful!';
+        this.success = true;
       } catch (error) {
-        this.message = error.response?.data?.message || 'Registration failed.'
+        this.message = error.response?.data?.message || 'Registration failed.';
+        this.success = false;
       }
     },
   },
-}
+};
 </script>

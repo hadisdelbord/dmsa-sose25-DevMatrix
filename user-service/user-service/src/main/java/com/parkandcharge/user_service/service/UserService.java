@@ -5,8 +5,8 @@ import com.parkandcharge.user_service.dto.LoginResponse;
 import com.parkandcharge.user_service.dto.RegisterUserRequest;
 import com.parkandcharge.user_service.dto.UserResponse;
 import com.parkandcharge.user_service.model.User;
-//import com.parkandcharge.user_service.model.UserRole;
 import com.parkandcharge.user_service.repository.UserRepository;
+import com.parkandcharge.user_service.config.JwtUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,11 +17,13 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
+        this.jwtUtil = jwtUtil;
     }
 
     @Transactional
@@ -53,10 +55,14 @@ public class UserService {
             throw new IllegalArgumentException("Invalid email or password");
         }
 
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
+
         return new LoginResponse(
                 user.getUserId(),
                 user.getName(),
                 user.getEmail(),
-                user.getRole().name());
+                user.getRole().name(),
+                token
+        );
     }
 }
