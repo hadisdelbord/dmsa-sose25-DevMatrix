@@ -11,7 +11,7 @@ public class OfferClient {
 
     public OfferSlotDto getOfferById(Long offerId) {
         return restTemplate.getForObject(
-            "http://localhost:8083/api/offers/" + offerId,
+            "http://STATIONMANAGEMENTSERVICE/api/offers/" + offerId,
             OfferSlotDto.class
         );
     }
