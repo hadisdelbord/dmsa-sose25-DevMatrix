@@ -47,7 +47,7 @@ export default {
   methods: {
     async loginUser() {
       try {
-        const response = await axios.post('http://localhost:8080/users/login', {
+        const response = await axios.post('http://localhost:8082/users/login', {
           email: this.email,
           password: this.password
         });
@@ -62,9 +62,9 @@ export default {
 
         // Redirect based on role
         if (role === 'DRIVER') {
-          this.$router.push('/booking');  // Change if your route is different
+          this.$router.push('/driver');  // Change if your route is different
         } else if (role === 'OWNER') {
-          this.$router.push('/owner-dashboard'); // Placeholder for owner page
+          this.$router.push('/owner'); // Placeholder for owner page
         }
       } catch (error) {
         this.message = error.response?.data || 'Login failed. Check your credentials.';
