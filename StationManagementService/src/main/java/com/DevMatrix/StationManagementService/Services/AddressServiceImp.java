@@ -10,9 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.DevMatrix.StationManagementService.Dtos.AddressDto;
+import com.DevMatrix.StationManagementService.Dtos.ChargingStationDto;
 import com.DevMatrix.StationManagementService.Mapper.AddressMapper;
 import com.DevMatrix.StationManagementService.Repositories.IAddressRepository;
 import com.DevMatrix.StationManagementService.domain.entity.Address;
+import com.DevMatrix.StationManagementService.domain.entity.ChargingStation;
 import com.DevMatrix.StationManagementService.domain.entity.PostalCode;
 
 @Service
@@ -31,6 +33,23 @@ public class AddressServiceImp implements AddressService {
         var address = _mapper.toEntity(addressdto);
         var savedAddress = _addressRepository.save(address);
         return _mapper.toDto(savedAddress);
+    }
+
+    @Override
+    public AddressDto updateAddress(Long id, AddressDto addressdto){
+        var currentAddress = _addressRepository.findById(id).get();
+        if(currentAddress != null){
+            Address address = _mapper.toEntity(addressdto);
+            currentAddress.setPostalCode(address.getPostalCode());
+            currentAddress.setState(address.getState());
+            currentAddress.setCity(address.getCity());
+            currentAddress.setStreet(address.getStreet());
+            Address savedAddress = _addressRepository.save(currentAddress);
+            AddressDto savedAddressDto = _mapper.toDto(savedAddress);
+            savedAddressDto.setId(addressdto.getId());
+            return savedAddressDto;
+        }
+        return null;
     }
 
     @Override

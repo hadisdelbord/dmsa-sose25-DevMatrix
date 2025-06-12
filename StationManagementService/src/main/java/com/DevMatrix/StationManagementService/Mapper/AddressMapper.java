@@ -23,10 +23,10 @@ public class AddressMapper {
         dto.setCity(address.getCity());
         dto.setStreet(address.getStreet());
         dto.setPostalCode(address.getPostalCode());
-        if (address.getChargingStations() != null)
-            dto.setChargingStations(
-                chargingStationMapper.toDtoList(address.getChargingStations())
-            );
+        // if (address.getChargingStations() != null)
+        //     dto.setChargingStations(
+        //         chargingStationMapper.toDtoList(address.getChargingStations())
+        //     );
         return dto;
     }
 
@@ -37,10 +37,10 @@ public class AddressMapper {
         address.setCity(dto.getCity());
         address.setStreet(dto.getStreet());
         address.setPostalCode(dto.getPostalCode());
-         if (dto.getChargingStations() != null)
-            address.setChargingStations(
-                chargingStationMapper.toEntityList(dto.getChargingStations())
-            );
+        //  if (dto.getChargingStations() != null)
+        //     address.setChargingStations(
+        //         chargingStationMapper.toEntityList(dto.getChargingStations())
+        //     );
         return address;
     }
         public List<AddressDto> toDtoList(List<Address> addresses) {

@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
+import com.DevMatrix.StationManagementService.Dtos.AvailableSlotDto;
+import com.DevMatrix.StationManagementService.Dtos.OfferAndStationDto;
 import com.DevMatrix.StationManagementService.Dtos.OfferSlotDto;
 import com.DevMatrix.StationManagementService.Services.OfferSlotService;
 
@@ -43,10 +44,10 @@ public class OfferSlotController {
         return ResponseEntity.ok(_offerSlotService.create(dto));
     }
     @PutMapping("UpdateOffer/OfferId/{id}")
-    public ResponseEntity<OfferSlotDto> update(@PathVariable Long id, @RequestBody OfferSlotDto dto) {
-        var offerResult = _offerSlotService.update(id, dto);
-        if(offerResult != null){
-            return ResponseEntity.ok(offerResult);
+    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody OfferSlotDto dto) {
+        var result = _offerSlotService.update(id, dto);
+        if(result != null){
+            return ResponseEntity.ok().build();
         }
         else{
             return ResponseEntity.notFound().build();
@@ -59,5 +60,17 @@ public class OfferSlotController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+    @GetMapping("GetAvailableOffer")
+    public ResponseEntity<List<AvailableSlotDto>> GetAvailableOffer() {
+        var offerslotWithAddress = _offerSlotService.GetAvailableOffers();
+        return ResponseEntity.ok(offerslotWithAddress);
+    }
+
+    @GetMapping("GetOfferById/OfferId/{offer_id}")
+    public ResponseEntity<OfferAndStationDto> GetOfferById(@PathVariable Long offer_id) {
+        var offerslotWithStation = _offerSlotService.GetOfferWithStationById(offer_id);
+        return offerslotWithStation.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }

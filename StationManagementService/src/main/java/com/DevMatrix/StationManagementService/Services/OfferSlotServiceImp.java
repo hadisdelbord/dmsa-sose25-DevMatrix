@@ -8,6 +8,8 @@ import java.util.stream.StreamSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.DevMatrix.StationManagementService.Dtos.AvailableSlotDto;
+import com.DevMatrix.StationManagementService.Dtos.OfferAndStationDto;
 import com.DevMatrix.StationManagementService.Dtos.OfferSlotDto;
 import com.DevMatrix.StationManagementService.Mapper.OfferSlotMapper;
 import com.DevMatrix.StationManagementService.Repositories.ChargingStationRepository;
@@ -61,7 +63,7 @@ public class OfferSlotServiceImp implements OfferSlotService {
             offerSlot.setPricePerSlot(offer.getPricePerSlot());
             offerSlot.setIsAvailable(offer.getIsAvailable());
             offerSlot.setSlotDate(offer.getSlotDate());
-            OfferSlot savedOffer = _offerSlotRepository.save(offer);
+            OfferSlot savedOffer = _offerSlotRepository.save(offerSlot);
             var offerslotDto = _OfferSlotMapper.toDto(savedOffer);
             offerslotDto.setStationId(dto.getStationId());
             return offerslotDto;
@@ -76,4 +78,16 @@ public class OfferSlotServiceImp implements OfferSlotService {
         }
         return false;
     }
+
+    public List<AvailableSlotDto> GetAvailableOffers(){
+        var availableOffer = _offerSlotRepository.GetAvailableOffers();
+        var offerslotDto = _OfferSlotMapper.toDtoListWithAddress(availableOffer);
+        return offerslotDto;
+    }
+
+     public Optional<OfferAndStationDto> GetOfferWithStationById(long offerId){
+        var offerslotDto = _offerSlotRepository.findById(offerId).map(_OfferSlotMapper :: toDtoWithStation);;
+        return offerslotDto;
+    }
+
 }

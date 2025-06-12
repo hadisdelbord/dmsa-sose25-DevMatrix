@@ -1,6 +1,5 @@
 package com.DevMatrix.StationManagementService.Dtos;
 
-import java.util.List;
 
 import com.DevMatrix.StationManagementService.domain.entity.PostalCode;
 
@@ -13,7 +12,7 @@ public class AddressDto {
     private String city;
     private String street;
     private PostalCode postalCode; 
-    private List<ChargingStationDto> chargingStations;
+    // private List<ChargingStationDto> chargingStations;
 
         // Getters
     public long getId() {
@@ -36,9 +35,9 @@ public class AddressDto {
         return postalCode;
     }
 
-    public List<ChargingStationDto> getChargingStations() {
-        return chargingStations;
-    }
+    // public List<ChargingStationDto> getChargingStations() {
+    //     return chargingStations;
+    // }
 
     // Setters
     public void setId(long id) {
@@ -61,7 +60,7 @@ public class AddressDto {
         this.postalCode = postalCode;
     }
 
-    public void setChargingStations(List<ChargingStationDto> chargingStations) {
-        this.chargingStations = chargingStations;
-    }
+    // public void setChargingStations(List<ChargingStationDto> chargingStations) {
+    //     this.chargingStations = chargingStations;
+    // }
 }

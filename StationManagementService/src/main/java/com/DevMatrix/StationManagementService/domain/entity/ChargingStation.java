@@ -26,6 +26,7 @@ public class ChargingStation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String name;
     private Long userId;
     @Enumerated(EnumType.STRING)
     private ActivityStatus activityStatus;
@@ -51,6 +52,14 @@ public class ChargingStation {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+     public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     // Getter and Setter for userId

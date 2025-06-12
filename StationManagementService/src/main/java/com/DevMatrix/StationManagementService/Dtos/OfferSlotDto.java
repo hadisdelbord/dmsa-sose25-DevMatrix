@@ -10,8 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Setter
-@Getter
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -22,7 +21,8 @@ public class OfferSlotDto {
     private BigDecimal timeSlot;
     private Float pricePerSlot;
     private Boolean isAvailable;
-    private ChargingStationDto chargingStation;
+
+    private AddressDto address;
 
         public Long getId() {
         return id;
@@ -68,18 +68,23 @@ public class OfferSlotDto {
         this.slotDate = slotDate;
     }
 
-    // Getter and Setter for chargingStation
-    public ChargingStationDto getChargingStation() {
-        return chargingStation;
-    }
-     public void setChargingStation(ChargingStationDto chargingStation) {
-        this.chargingStation = chargingStation;
-    }
+    
+   
+    //  public void setChargingStation(ChargingStationDto chargingStation) {
+    //     this.chargingStation = chargingStation;
+    // }
 
     public Long getStationId() {
         return stationId;
     }
      public void setStationId(Long stationId) {
         this.stationId = stationId;
+    }
+
+    public AddressDto getAddress() {
+        return address;
+    }
+     public void setAddress(AddressDto addressdto) {
+        this.address = addressdto;
     }
 }

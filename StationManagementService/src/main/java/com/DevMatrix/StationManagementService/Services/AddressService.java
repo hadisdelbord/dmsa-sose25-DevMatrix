@@ -16,4 +16,5 @@ public interface AddressService {
     Optional<AddressDto> GetAddressByPostalCode(PostalCode postalCode);
     List<AddressDto> getAllAddresses();
     void deleteAddress(Long id);
+    AddressDto updateAddress(Long id, AddressDto addressdto);
 }
