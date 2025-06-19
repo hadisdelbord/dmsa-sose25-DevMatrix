@@ -1,0 +1,45 @@
+// Domain model for the Order Service
+domain model OrderModel {
+    
+    // Aggregate representing an Order
+    Aggregate Order {
+        
+        // Entity representing an Order
+        Entity Order {
+            id: String // Unique identifier of the order
+            version: Integer // Version number for concurrency control
+            status: OrderStatus // Current status of the order
+            customerId: Integer // Assigned customer ID (-1 if not yet assigned)
+            restaurantId: Integer // Assigned restaurant ID (-1 if not yet assigned)
+            items: List<OrderItem> // List of ordered items
+            minOrderValue: Decimal // Minimum order value set by the restaurant
+            deliveryTime: String // Planned delivery time
+            deliveryAddress: String // Customer's delivery address
+        }
+
+        // Entity representing an individual item within an Order
+        Entity OrderItem {
+            quantity: Integer // Number of units ordered
+            number: String // Unique number of the item (matches MenuItem number)
+            name: String // Name of the item
+            unitPrice: Decimal // Price per unit
+        }
+
+        // Enumeration representing possible states of an Order
+        Enum OrderStatus {
+            ACCEPTED // Order has been accepted
+            PENDING // Order acceptance is still pending
+            REJECTED // Order has been rejected
+            CHANGE_PENDING // Change confirmation is still pending
+        }
+
+        // Domain Service implementing order-related functionalities
+        DomainService OrderDomainService {
+            operation takeOrder() // Place a new order
+            operation updateOrder() // Update an existing order
+            operation cancelOrder() // Cancel an order
+            operation acceptOrder() // Accept an order
+            operation rejectOrder() // Reject an order
+        }
+    }
+}

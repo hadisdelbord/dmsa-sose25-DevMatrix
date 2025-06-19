@@ -103,16 +103,18 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import * as bootstrap from 'bootstrap';
 import { faker } from '@faker-js/faker';
+// import BookingService from '../service/BookingService'; // for real API
+// import OfferService from '../service/OfferService';     // for updating is_available
 
 let modalInstance = null;
 const selectedBookingId = ref(null);
 const alertMessage = ref('');
 const searchQuery = ref('');
 
-// Generate dummy bookings programmatically
+// Generate dummy bookings
 const generateBookings = (count = 10) => {
   const statuses = ['RESERVED', 'CONFIRMED', 'COMPLETED', 'CANCELED'];
   const stations = ['FastCharge A', 'EV Hub', 'ChargePoint', 'SuperCharge'];
@@ -121,6 +123,7 @@ const generateBookings = (count = 10) => {
   for (let i = 0; i < count; i++) {
     bookings.push({
       bookingId: 2000 + i,
+      offerId: 1000 + i, // Added offerId for API
       status: statuses[Math.floor(Math.random() * statuses.length)],
       station: stations[Math.floor(Math.random() * stations.length)],
       slotDate: faker.date.future().toISOString().slice(0, 16).replace('T', ' '),
@@ -137,6 +140,23 @@ const generateBookings = (count = 10) => {
 
 const stationBookings = ref(generateBookings(10));
 
+const fetchBookings = async () => {
+  // Uncomment for real API:
+  /*
+  try {
+    const response = await BookingService.getBookingsForStation(stationId);
+    stationBookings.value = response.data;
+  } catch (error) {
+    console.error('Failed to fetch bookings:', error.message);
+  }
+  */
+  stationBookings.value = generateBookings(10); // Dummy data
+};
+
+onMounted(() => {
+  fetchBookings();
+});
+
 const filteredBookings = computed(() => {
   if (!searchQuery.value) return stationBookings.value;
   return stationBookings.value.filter((booking) =>
@@ -151,13 +171,25 @@ const cancelBooking = (id) => {
   modalInstance.show();
 };
 
-const confirmCancel = () => {
+const confirmCancel = async () => {
   const booking = stationBookings.value.find(
     (b) => b.bookingId === selectedBookingId.value
   );
   if (booking && booking.status === 'RESERVED') {
     booking.status = 'CANCELED';
     alertMessage.value = `Booking #${booking.bookingId} has been canceled.`;
+
+    // Call API to set is_available = true for the related offer
+    /*
+    try {
+      await OfferService.updateOfferAvailability(booking.offerId, {
+        is_available: true
+      });
+      console.log(`Offer ${booking.offerId} availability updated.`);
+    } catch (error) {
+      console.error('Failed to update offer availability:', error.message);
+    }
+    */
   } else {
     alertMessage.value = `Booking #${booking.bookingId} cannot be canceled.`;
   }

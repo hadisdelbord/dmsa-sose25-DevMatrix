@@ -11,8 +11,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1")
+@CrossOrigin("*")
 public class LocationRestController {
 
     @Autowired
@@ -24,6 +27,16 @@ public class LocationRestController {
     public LocationRestController(GeoLocationService geoLocationService, LocationService locationService) {
         this.geoLocationService = geoLocationService;
         this.locationService = locationService;
+    }
+
+    @GetMapping(path = {"/locations"})
+    public ResponseEntity<List<Location>> allLocations() {
+        return new ResponseEntity<>(locationService.getAllLocations(), HttpStatus.OK);
+    }
+
+    @GetMapping(path = {"/locations/zipcode/{zipCode}"})
+    public ResponseEntity<List<Location>> allLocationsByZipCode(@PathVariable int zipCode) {
+        return new ResponseEntity<>(locationService.getAllLocations(zipCode), HttpStatus.OK);
     }
 
     @PostMapping(path = {"/location/"})
