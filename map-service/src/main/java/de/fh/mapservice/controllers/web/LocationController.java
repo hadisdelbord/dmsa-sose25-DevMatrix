@@ -27,4 +27,5 @@ public class LocationController {
     public ResponseEntity<LocationDTO> getLocation(@RequestParam String query) {
         return ResponseEntity.ok(geoLocationService.getLocationDTO(query));
     }
+
 }
