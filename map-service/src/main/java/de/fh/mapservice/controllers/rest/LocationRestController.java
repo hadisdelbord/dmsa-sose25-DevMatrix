@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1")
 public class LocationRestController {
@@ -24,6 +26,11 @@ public class LocationRestController {
     public LocationRestController(GeoLocationService geoLocationService, LocationService locationService) {
         this.geoLocationService = geoLocationService;
         this.locationService = locationService;
+    }
+
+    @GetMapping(path = {"/locations"})
+    public ResponseEntity<List<LocationDTO>> allLocations() {
+        return new ResponseEntity<>(locationService.getAllLocations(), HttpStatus.OK);
     }
 
     @PostMapping(path = {"/location/"})

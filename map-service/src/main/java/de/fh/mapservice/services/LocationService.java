@@ -3,11 +3,19 @@ package de.fh.mapservice.services;
 import de.fh.mapservice.dtos.LocationCreationDTO;
 import de.fh.mapservice.dtos.LocationDTO;
 import de.fh.mapservice.models.Location;
+import de.fh.mapservice.repositories.LocationRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LocationService {
+
+    @Autowired
+    private LocationRepository locationRepository;
 
     private final ModelMapper modelMapper = new ModelMapper();
 
@@ -23,5 +31,11 @@ public class LocationService {
         location.setLongitude(locationDTO.getLon());
 
         return location;
+    }
+
+    public List<LocationDTO> getAllLocations() {
+        return locationRepository.findAll().stream()
+                .map(location -> modelMapper.map(location, LocationDTO.class))
+                .collect(Collectors.toList());
     }
 }

@@ -8,12 +8,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.List;
 
 @Service
 public class GeoLocationService {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final String NOMINATIM_BASE_URL = "https://nominatim.openstreetmap.org/search?format=json&q=";
+
+
 
     public LocationDTO getLocationDTO(String address) {
         String url = NOMINATIM_BASE_URL + address;
