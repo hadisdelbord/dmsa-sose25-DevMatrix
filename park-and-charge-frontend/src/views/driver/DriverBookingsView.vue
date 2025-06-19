@@ -30,8 +30,7 @@
     <div v-if="showModal" class="modal-backdrop">
       <div class="modal-content bg-white p-4 rounded shadow">
         <h5>Confirm Booking</h5>
-        <p>Do you want to book the offer at <strong>{{ selectedOffer.stationName }}</strong> on {{
-          selectedOffer.availableDate }}?</p>
+        <p>Do you want to book the offer at <strong>{{ selectedOffer.stationName }}</strong> on {{ selectedOffer.availableDate }}?</p>
         <div class="text-end">
           <button class="btn btn-success me-2" @click="submitBooking">Yes, Book</button>
           <button class="btn btn-secondary" @click="closeModal">Cancel</button>
@@ -116,7 +115,8 @@
 </template>
 
 <script setup>
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed, nextTick, onMounted } from 'vue'
+// import axios from 'axios' // Uncomment when backend ready
 import { Toast } from 'bootstrap'
 
 const userId = 42
@@ -132,6 +132,7 @@ const toastRef = ref(null)
 const toastInstance = ref(null)
 const toastMessage = ref('')
 
+// Fake data for development
 const offers = ref([
   {
     offerId: 201,
@@ -171,8 +172,21 @@ const closeModal = () => {
   selectedOffer.value = null
 }
 
-const submitBooking = () => {
+const submitBooking = async () => {
   const offer = selectedOffer.value
+
+  // Update offer availability via API (currently commented for fake data)
+  try {
+    // await axios.put(`http://localhost:8081/api/bookings/UpdateOffer/OfferId/${offer.offerId}`, {
+    //   isAvailable: false
+    // })
+    // showToast('Offer availability updated!')
+  } catch (error) {
+    console.error('Failed to update offer:', error)
+    showToast('Error updating offer availability')
+  }
+
+  // Fake data booking action
   myBookings.value.push({
     bookingId: Date.now(),
     offerId: offer.offerId,
@@ -207,7 +221,6 @@ const submitPayment = () => {
     return
   }
 
-  // Update booking status to CONFIRMED
   const index = myBookings.value.findIndex(b => b.bookingId === paymentBooking.value.bookingId)
   if (index !== -1) {
     myBookings.value[index].status = 'CONFIRMED'
@@ -231,6 +244,21 @@ function showToast(message) {
 function hideToast() {
   if (toastInstance.value) toastInstance.value.hide()
 }
+
+// Prepared API Call (for fetching offers - commented)
+const fetchOffers = async () => {
+  try {
+    // const response = await axios.get('http://localhost:8081/api/bookings/getAvailableOffers')
+    // offers.value = response.data
+  } catch (error) {
+    console.error('Error fetching offers:', error)
+    showToast('Failed to fetch offers')
+  }
+}
+
+onMounted(() => {
+  // fetchOffers() // enable when ready
+})
 </script>
 
 <style scoped>
@@ -251,6 +279,4 @@ function hideToast() {
   width: 100%;
   max-width: 400px;
 }
-
-/* Toast styling overrides if needed */
 </style>
