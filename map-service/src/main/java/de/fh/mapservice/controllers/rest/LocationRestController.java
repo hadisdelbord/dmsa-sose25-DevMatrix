@@ -34,6 +34,11 @@ public class LocationRestController {
         return new ResponseEntity<>(locationService.getAllLocations(), HttpStatus.OK);
     }
 
+    @GetMapping(path = {"/locations/zipcode/{zipCode}"})
+    public ResponseEntity<List<Location>> allLocationsByZipCode(@PathVariable int zipCode) {
+        return new ResponseEntity<>(locationService.getAllLocations(zipCode), HttpStatus.OK);
+    }
+
     @PostMapping(path = {"/location/"})
     public ResponseEntity<Location> location(@RequestBody LocationCreationDTO locationCreationDTO) {
         // 1. Convert RequestBody to query

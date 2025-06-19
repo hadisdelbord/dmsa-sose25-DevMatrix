@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface LocationRepository extends JpaRepository<Location, Long> {
     Optional<Location> findByStationId(Long stationId);
+    List<Location> findByZipCode(int zipCode);
 }
