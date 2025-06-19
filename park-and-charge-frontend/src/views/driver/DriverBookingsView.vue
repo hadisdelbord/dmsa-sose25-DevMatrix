@@ -8,12 +8,15 @@
       <input v-model="searchCode" class="form-control" placeholder="Enter postal code..." />
     </div>
 
+    <!-- Map -->
+    <div id="map" style="height: 400px; margin: 20px;"></div>
+
     <!-- Offers Found -->
     <div v-if="filteredOffers.length">
       <h5>Available Offers</h5>
       <div class="list-group mb-4">
         <div class="list-group-item d-flex justify-content-between align-items-start flex-column"
-          v-for="offer in filteredOffers" :key="offer.offerId">
+             v-for="offer in filteredOffers" :key="offer.offerId">
           <div>
             <strong>{{ offer.stationName }}</strong> ({{ offer.powerOutput }})<br />
             Address: {{ offer.address.city }}, {{ offer.address.street }} ({{ offer.address.postalCode }})<br />
@@ -65,59 +68,131 @@
     <h5>Your Bookings</h5>
     <table class="table table-striped">
       <thead>
-        <tr>
-          <th>Booking ID</th>
-          <th>Status</th>
-          <th>Station</th>
-          <th>Date</th>
-          <th>Timeslot</th>
-          <th>Price</th>
-          <th>Actions</th>
-        </tr>
+      <tr>
+        <th>Booking ID</th>
+        <th>Status</th>
+        <th>Station</th>
+        <th>Date</th>
+        <th>Timeslot</th>
+        <th>Price</th>
+        <th>Actions</th>
+      </tr>
       </thead>
       <tbody>
-        <tr v-for="booking in myBookings" :key="booking.bookingId">
-          <td>{{ booking.bookingId }}</td>
-          <td>
+      <tr v-for="booking in myBookings" :key="booking.bookingId">
+        <td>{{ booking.bookingId }}</td>
+        <td>
             <span :class="{
               'badge bg-warning text-dark': booking.status === 'RESERVED',
               'badge bg-success': booking.status === 'CONFIRMED'
             }">
               {{ booking.status }}
             </span>
-          </td>
-          <td>{{ booking.stationName }}</td>
-          <td>{{ booking.date }}</td>
-          <td>{{ booking.timeslot }}</td>
-          <td>{{ booking.price }} €</td>
-          <td>
-            <button v-if="booking.status === 'RESERVED'" class="btn btn-sm btn-primary"
-              @click="openPaymentModal(booking)">
-              Pay
-            </button>
-          </td>
-        </tr>
+        </td>
+        <td>{{ booking.stationName }}</td>
+        <td>{{ booking.date }}</td>
+        <td>{{ booking.timeslot }}</td>
+        <td>{{ booking.price }} €</td>
+        <td>
+          <button v-if="booking.status === 'RESERVED'" class="btn btn-sm btn-primary"
+                  @click="openPaymentModal(booking)">
+            Pay
+          </button>
+        </td>
+      </tr>
       </tbody>
     </table>
 
     <!-- Bootstrap Toast Notification -->
     <div class="position-fixed top-0 end-0 p-3" style="z-index: 1100">
       <div ref="toastRef" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive"
-        aria-atomic="true">
+           aria-atomic="true">
         <div class="d-flex">
           <div class="toast-body">{{ toastMessage }}</div>
           <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
-            @click="hideToast"></button>
+                  @click="hideToast"></button>
         </div>
       </div>
     </div>
   </div>
 </template>
 
+
+<script>
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import chargerIcon from '@/assets/icons/charger-1.png';
+import chargerIconFull from '@/assets/icons/charger-2.png';
+import mapService from "@/service/MapService.js";
+
+export default {
+  name: 'LocationMap',
+  data() {
+    return {
+      map: null,
+    };
+  },
+  mounted() {
+    this.initMap();
+    this.loadLocations();
+  },
+  methods: {
+    initMap() {
+      this.map = L.map('map').setView([51.5136, 7.4653], 13); // Default center: Dortmund
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors',
+      }).addTo(this.map);
+    },
+
+    async loadLocations() {
+      try {
+        const response = await mapService.getAllLocations();
+        response.data.forEach(loc => {
+          if (loc.latitude && loc.longitude) {
+            L.marker([loc.latitude, loc.longitude], {icon: L.icon({
+                iconUrl: chargerIcon,
+                iconSize: [30, 30],
+                iconAnchor: [22, 94],
+                popupAnchor: [-3, -76],
+                // shadowUrl: chargerIconFull,
+                shadowSize: [60, 30],
+                shadowAnchor: [22, 94]
+              })})
+              .addTo(this.map)
+              .bindPopup(`<b>${loc.city}, ${loc.street}</b>`);
+          }
+        });
+      } catch (error) {
+        console.error("Error loading locations:", error);
+      }
+    },
+  },
+};
+
+// async loadLocations() {
+//   try {
+//     const response = await axios.get(mapService); // Adjust if needed
+//     const locations = response.data;
+//
+//     locations.forEach(loc => {
+//       if (loc.latitude && loc.longitude) {
+//         const marker = L.marker([loc.latitude, loc.longitude])
+//           .addTo(this.map)
+//           .bindPopup(`<b>${loc.city}, ${loc.street}</b><br/>Zip: ${loc.zipCode}`);
+//       }
+//     });
+//   } catch (error) {
+//     console.error("Error loading locations:", error);
+//   }
+// },
+</script>
+
 <script setup>
-import { ref, computed, nextTick, onMounted } from 'vue'
+import {ref, computed, nextTick, onMounted} from 'vue'
 // import axios from 'axios' // Uncomment when backend ready
-import { Toast } from 'bootstrap'
+import {Toast} from 'bootstrap'
 
 const userId = 42
 
@@ -141,7 +216,7 @@ const offers = ref([
     timeslot: '30 Minutes',
     availableDate: '2025-06-01',
     price: 8.5,
-    address: { city: 'Addis', street: 'Main St', postalCode: '1000' }
+    address: {city: 'Addis', street: 'Main St', postalCode: '1000'}
   },
   {
     offerId: 202,
@@ -150,7 +225,7 @@ const offers = ref([
     timeslot: '1 Hour',
     availableDate: '2025-06-02',
     price: 12.0,
-    address: { city: 'Adama', street: 'Power Rd', postalCode: '1100' }
+    address: {city: 'Adama', street: 'Power Rd', postalCode: '1100'}
   }
 ])
 
@@ -256,9 +331,8 @@ const fetchOffers = async () => {
   }
 }
 
-onMounted(() => {
-  // fetchOffers() // enable when ready
-})
+// onMounted(() => {
+// })
 </script>
 
 <style scoped>
