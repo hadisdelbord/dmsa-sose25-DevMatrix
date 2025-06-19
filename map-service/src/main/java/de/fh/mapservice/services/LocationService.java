@@ -33,9 +33,7 @@ public class LocationService {
         return location;
     }
 
-    public List<LocationDTO> getAllLocations() {
-        return locationRepository.findAll().stream()
-                .map(location -> modelMapper.map(location, LocationDTO.class))
-                .collect(Collectors.toList());
+    public List<Location> getAllLocations() {
+        return locationRepository.findAll();
     }
 }

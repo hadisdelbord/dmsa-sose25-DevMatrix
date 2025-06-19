@@ -15,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
+@CrossOrigin("*")
 public class LocationRestController {
 
     @Autowired
@@ -29,7 +30,7 @@ public class LocationRestController {
     }
 
     @GetMapping(path = {"/locations"})
-    public ResponseEntity<List<LocationDTO>> allLocations() {
+    public ResponseEntity<List<Location>> allLocations() {
         return new ResponseEntity<>(locationService.getAllLocations(), HttpStatus.OK);
     }
 
