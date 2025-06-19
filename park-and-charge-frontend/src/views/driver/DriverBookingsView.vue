@@ -122,7 +122,6 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import chargerIcon from '@/assets/icons/charger-1.png';
-import chargerIconFull from '@/assets/icons/charger-2.png';
 import mapService from "@/service/MapService.js";
 
 export default {
@@ -132,33 +131,31 @@ export default {
       map: null,
     };
   },
-  mounted() {
+  async mounted() {
+    // Init Map
     this.initMap();
-    this.loadLocations();
+
+    // Get All locations and show on map
+    const response = await mapService.getAllLocations();
+    this.loadLocations(response.data);
   },
   methods: {
     initMap() {
       this.map = L.map('map').setView([51.5136, 7.4653], 13); // Default center: Dortmund
-
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; OpenStreetMap contributors',
       }).addTo(this.map);
     },
-
-    async loadLocations() {
+    loadLocations(data) {
       try {
-        const response = await mapService.getAllLocations();
-        response.data.forEach(loc => {
+        data.forEach(loc => {
           if (loc.latitude && loc.longitude) {
             L.marker([loc.latitude, loc.longitude], {icon: L.icon({
                 iconUrl: chargerIcon,
                 iconSize: [30, 30],
                 iconAnchor: [22, 94],
                 popupAnchor: [-3, -76],
-                // shadowUrl: chargerIconFull,
-                shadowSize: [60, 30],
-                shadowAnchor: [22, 94]
               })})
               .addTo(this.map)
               .bindPopup(`<b>${loc.city}, ${loc.street}</b>`);
@@ -170,27 +167,10 @@ export default {
     },
   },
 };
-
-// async loadLocations() {
-//   try {
-//     const response = await axios.get(mapService); // Adjust if needed
-//     const locations = response.data;
-//
-//     locations.forEach(loc => {
-//       if (loc.latitude && loc.longitude) {
-//         const marker = L.marker([loc.latitude, loc.longitude])
-//           .addTo(this.map)
-//           .bindPopup(`<b>${loc.city}, ${loc.street}</b><br/>Zip: ${loc.zipCode}`);
-//       }
-//     });
-//   } catch (error) {
-//     console.error("Error loading locations:", error);
-//   }
-// },
 </script>
 
 <script setup>
-import {ref, computed, nextTick, onMounted} from 'vue'
+import {ref, computed, nextTick} from 'vue'
 // import axios from 'axios' // Uncomment when backend ready
 import {Toast} from 'bootstrap'
 
@@ -330,9 +310,6 @@ const fetchOffers = async () => {
     showToast('Failed to fetch offers')
   }
 }
-
-// onMounted(() => {
-// })
 </script>
 
 <style scoped>
