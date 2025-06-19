@@ -13,17 +13,26 @@ public class ChargingStationDto {
     private Long id;
     private Long userId;
     private ActivityStatus activityStatus;
+    private String name;
     private Float powerOutput;
     private Long addressId;
      private List<OfferSlotDto> offerSlots;
      private AddressDto address;
 
-         public Long getId() {
+    public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     // Getter and Setter for userId

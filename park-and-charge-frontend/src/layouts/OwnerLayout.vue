@@ -16,6 +16,11 @@
           </router-link>
         </li>
         <li class="nav-item mb-2">
+          <router-link to="/owner/Offers" class="nav-link text-white" exact-active-class="router-link-active">
+            <i class="bi bi-hdd-network me-2"></i> offerSlots
+          </router-link>
+        </li>
+        <li class="nav-item mb-2">
           <router-link to="/owner/bookings" class="nav-link text-white" exact-active-class="router-link-active">
             <i class="bi bi-calendar-check-fill me-2"></i> Bookings
           </router-link>

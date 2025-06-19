@@ -20,6 +20,7 @@
       <thead class="table-light">
         <tr>
           <th>Station ID</th>
+          <th>Station Name</th>
           <th>Status</th>
           <th>Power Output</th>
           <th>User</th>
@@ -30,6 +31,7 @@
       <tbody>
         <tr v-for="station in filteredStation" :key="station.id">
           <td>{{ station.id }}</td>
+          <td>{{ station.name }}</td>
           <td>
             <span
               class="badge"
@@ -78,16 +80,32 @@
 
         <div class="modal-body">
           <div class="border rounded p-3">
-          <div class="mb-3">         
-            <label class="form-label">Postal Code</label>
+<div class="mb-3">
+    <label class="form-label">Postal Code</label>
+  <select
+    class="form-select"
+    v-model="formData.station.address"
+  >
+    <option disabled value="">Select postal code</option>
+    <option
+      v-for="addr in allAddresses"
+      :key="addr.id"
+      :value="addr"
+    >
+      {{ addr.postalCode?.value }} - {{ addr.city }}, {{ addr.street }}
+    </option>
+  </select>
+</div>
+          <div class="row">
+              <div class="col-md-6">            
+              <label class="form-label">Station Name</label>
               <input
               type="text"
               class="form-control"
-              disabled
-              v-model="formData.address.postalCode.code"
+              v-model="formData.station.name"
+              placeholder="Enter the station name"
               />
-          </div>
-          <div class="row">
+            </div>
             <div class="col-md-6">            
               <label class="form-label">Power Output (kW)</label>
               <input
@@ -104,7 +122,7 @@
               v-model="formData.station.activityStatus"
               >
               <option value="ACTIVE">Active</option>
-              <option value="INACTIVE">Inactive</option>
+              <option value="Inactive">Inactive</option>
               </select>
             </div>
              </div>
@@ -120,6 +138,7 @@
         </div>
 
       </div>
+
     </div>
   </div>
 
@@ -168,6 +187,7 @@
 import { ref, computed, onMounted } from 'vue';
 import * as bootstrap from 'bootstrap';
 import stationService from '@/service/StationManagementService';
+import locationService from '@/service/LocationService';
 
 //let modalInstance = null;
 const selectedBookingId = ref(null);
@@ -177,6 +197,8 @@ const stations = ref([]);
 let modalInstance = null;
 const modalRef = ref(null); 
 const isEditMode = ref(false);
+const submitted = ref(false);
+const allAddresses = ref([]);
 const formData = ref({
   station: {},
   address: {postalCode: { code: '' }}
@@ -228,6 +250,51 @@ const showModal = () => {
   modalInstance.show();
 };
 
+onMounted(async () => {
+  try {
+    const response = await locationService.getAll();
+    allAddresses.value = response.data;
+    console.log('Loaded addresses:', allAddresses.value);
+  } catch (error) {
+    console.error('Failed to load addresses:', error);
+  }
+});
+
+
+const handleSubmit = async () => {
+  submitted.value = true;
+
+  const station = formData.value.station;
+  console.log(station);
+  // Basic required field check
+  if (!station.addressId && !station.address?.id) {
+    console.warn("Address is required.");
+    return;
+  }
+
+  try {
+    await stationService.updateStation(station, isEditMode.value);
+
+    // Refresh station list
+    const response = await stationService.getAll();
+    stations.value = response.data;
+
+    // Reset form and state
+    formData.value.station = getEmptyStation(); // define this factory like getEmptyLocation()
+    submitted.value = false;
+    modalInstance.hide();
+
+  } catch (error) {
+    console.error('Failed to save station:', error);
+    // Optionally show a toast or message
+  }
+};
+const getEmptyStation = () => ({
+  name: '',
+  powerOutput: 0,
+  activityStatus: 'ACTIVE',
+  addressId: null // or address: null if passing full object
+});
 // const cancelBooking = (id) => {
 //   selectedBookingId.value = id;
 //   const modalEl = document.getElementById('cancelConfirmModal');

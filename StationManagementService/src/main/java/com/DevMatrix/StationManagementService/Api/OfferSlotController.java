@@ -1,8 +1,11 @@
 package com.DevMatrix.StationManagementService.Api;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.DevMatrix.StationManagementService.Dtos.AvailableSlotDto;
@@ -17,6 +21,7 @@ import com.DevMatrix.StationManagementService.Dtos.OfferAndStationDto;
 import com.DevMatrix.StationManagementService.Dtos.OfferSlotDto;
 import com.DevMatrix.StationManagementService.Services.OfferSlotService;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("api/OfferSlots")
 public class OfferSlotController {
@@ -39,10 +44,24 @@ public class OfferSlotController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping("Create")
-    public ResponseEntity<OfferSlotDto> create(@RequestBody OfferSlotDto dto) {
-        return ResponseEntity.ok(_offerSlotService.create(dto));
+    @GetMapping("GetOfferByStation/station/{stationId}")
+public ResponseEntity<List<OfferSlotDto>> getOffersByStationAndDate(
+    @PathVariable Long stationId,
+    @RequestParam("slotDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate slotDate
+) {
+    List<OfferSlotDto> slots = _offerSlotService.GetByStationIdAndDate(stationId, slotDate);
+    return ResponseEntity.ok(slots);
+}
+
+
+    @PostMapping("CreateOrUpdate")
+    public ResponseEntity<String> createOrUpdateAll(@RequestBody List<OfferSlotDto> dtos) {
+         _offerSlotService.createOrUpdateAll(dtos); // No return value needed if it's just a save
+    return ResponseEntity.ok("Offer slots saved successfully.");
     }
+    
+
+
     @PutMapping("UpdateOffer/OfferId/{id}")
     public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody OfferSlotDto dto) {
         var result = _offerSlotService.update(id, dto);

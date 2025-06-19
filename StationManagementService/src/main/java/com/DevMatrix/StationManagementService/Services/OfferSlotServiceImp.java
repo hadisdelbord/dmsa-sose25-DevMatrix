@@ -1,5 +1,8 @@
 package com.DevMatrix.StationManagementService.Services;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,17 +46,56 @@ public class OfferSlotServiceImp implements OfferSlotService {
     public Optional<OfferSlotDto> getById(Long id) {
         return _offerSlotRepository.findById(id).map(_OfferSlotMapper :: toDto);
     }
-    @Override
-    public OfferSlotDto create(OfferSlotDto dto) {
-        OfferSlot offerEntity = _OfferSlotMapper.toEntity(dto);
-        ChargingStation station = _chargingStationRepository.findById(dto.getStationId())
-                        .orElseThrow(() -> new RuntimeException("Station not found with id " + dto.getStationId()));
-        offerEntity.setChargingStation(station);
-        var savedOffer = _offerSlotRepository.save(offerEntity);  
-        var savedOfferDto = _OfferSlotMapper.toDto(savedOffer);
-        savedOfferDto.setStationId(dto.getStationId());
-        return savedOfferDto;
+
+    public void createAll(List<OfferSlotDto> dtos) {
+    List<OfferSlot> entities = dtos.stream().map(dto -> {
+        OfferSlot slot = new OfferSlot();
+        slot.setTimeSlot(dto.getTimeSlot());
+        slot.setPricePerSlot(dto.getPricePerSlot());
+        slot.setIsAvailable(dto.getIsAvailable());
+        slot.setSlotDate(dto.getSlotDate());
+
+        ChargingStation station = new ChargingStation();
+        station.setId(dto.getStationId());
+        slot.setChargingStation(station);
+
+        return slot;
+    }).collect(Collectors.toList());
+
+    _offerSlotRepository.saveAll(entities);
     }
+
+    public void createOrUpdateAll(List<OfferSlotDto> dtos) {
+    for (OfferSlotDto dto : dtos) {
+        Optional<OfferSlot> existingSlotOpt = _offerSlotRepository
+            .findByChargingStationIdAndSlotDateAndTimeSlot(
+                dto.getStationId(),
+                dto.getSlotDate(),
+                dto.getTimeSlot()
+            );
+
+        if (existingSlotOpt.isPresent()) {
+            OfferSlot existingSlot = existingSlotOpt.get();
+            existingSlot.setPricePerSlot(dto.getPricePerSlot());
+            existingSlot.setIsAvailable(dto.getIsAvailable());
+            _offerSlotRepository.save(existingSlot);
+        } else {
+            OfferSlot slot = new OfferSlot();
+            slot.setTimeSlot(dto.getTimeSlot());
+            slot.setPricePerSlot(dto.getPricePerSlot());
+            slot.setIsAvailable(dto.getIsAvailable());
+            slot.setSlotDate(dto.getSlotDate());
+            slot.setSlotDuration(dto.getSlotDuration());
+
+            ChargingStation station = new ChargingStation();
+            station.setId(dto.getStationId());
+            slot.setChargingStation(station);
+
+            _offerSlotRepository.save(slot);
+        }
+    }
+}
+
     @Override
     public OfferSlotDto update(Long id, OfferSlotDto dto) {
         var offerSlot = _offerSlotRepository.findById(id).get();
@@ -88,6 +130,17 @@ public class OfferSlotServiceImp implements OfferSlotService {
      public Optional<OfferAndStationDto> GetOfferWithStationById(long offerId){
         var offerslotDto = _offerSlotRepository.findById(offerId).map(_OfferSlotMapper :: toDtoWithStation);;
         return offerslotDto;
+    }
+    
+    public List<OfferSlotDto> GetByStationIdAndDate(Long stationId, LocalDate date) {
+        LocalDateTime startOfDay = date.atStartOfDay(); 
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
+            List<OfferSlot> slots = _offerSlotRepository.findByChargingStationIdAndSlotDateBetween(
+        stationId,startOfDay, endOfDay
+    );
+            return slots.stream()
+                .map(_OfferSlotMapper::toDto)
+                .collect(Collectors.toList());
     }
 
 }

@@ -28,6 +28,7 @@ public class OfferSlot {
     private Float pricePerSlot;
     private Boolean isAvailable;
     private LocalDateTime slotDate;
+    private int slotDuration;
 
     @ManyToOne
     @JoinColumn(name = "station_id")
@@ -62,6 +63,14 @@ public class OfferSlot {
 
     public void setPricePerSlot(Float pricePerSlot) {
         this.pricePerSlot = pricePerSlot;
+    }
+
+    public int getSlotDuration() {
+        return slotDuration;
+    }
+
+    public void setSlotDuration(int slotDuration) {
+        this.slotDuration = slotDuration;
     }
 
     // Getter and Setter for isAvailable

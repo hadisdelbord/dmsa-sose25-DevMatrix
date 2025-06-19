@@ -72,9 +72,6 @@ public class ChargingStationServiceImp implements ChargingStationService {
     @Override
     public ChargingStationDto createStation(ChargingStationDto dto) {
         ChargingStation station = _chargingStationMapper.toEntity(dto);
-        Address address = _addressRepository.findById(dto.getAddressId())
-                        .orElseThrow(() -> new RuntimeException("Address not found with id " + dto.getAddressId()));
-        station.setAddress(address);
         var savedStation = _chargingStationRepository.save(station);  
         var savedStationDto = _chargingStationMapper.toDto(savedStation);
         savedStationDto.setAddressId(dto.getAddressId());
@@ -88,6 +85,12 @@ public class ChargingStationServiceImp implements ChargingStationService {
             ChargingStation station = _chargingStationMapper.toEntity(dto);
             currentchargingStation.setActivityStatus(station.getActivityStatus());
             currentchargingStation.setPowerOutput(station.getPowerOutput());
+            currentchargingStation.setName(station.getName());
+             if (dto.getAddress() != null) {
+            Address address = new Address();
+            address.setId(dto.getAddress().getId());
+            currentchargingStation.setAddress(address);
+        }
             ChargingStation savedStation = _chargingStationRepository.save(currentchargingStation);
             ChargingStationDto savedStationDto = _chargingStationMapper.toDto(savedStation);
             savedStationDto.setAddressId(dto.getAddressId());

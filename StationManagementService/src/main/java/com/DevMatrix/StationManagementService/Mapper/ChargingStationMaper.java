@@ -23,6 +23,7 @@ public class ChargingStationMaper {
         dto.setUserId(station.getUserId());
         dto.setActivityStatus(station.getActivityStatus());
         dto.setPowerOutput(station.getPowerOutput());
+        dto.setName(station.getName());
         if (station.getAddress() != null)
             dto.setAddressId(station.getAddress().getId());
         return dto;
@@ -34,6 +35,14 @@ public class ChargingStationMaper {
         station.setUserId(dto.getUserId());
         station.setActivityStatus(dto.getActivityStatus());
         station.setPowerOutput(dto.getPowerOutput());
+        station.setName(dto.getName());
+       if (dto.getAddress() != null) {
+        Address address = new Address();
+        address.setId(dto.getAddress().getId()); // only set ID
+        station.setAddress(address); // Hibernate will handle the relationship
+    } else {
+        throw new RuntimeException("Address ID is missing in DTO");
+    }
         return station;
     }
 

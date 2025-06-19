@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.DevMatrix.StationManagementService.Dtos.AddressDto;
 import com.DevMatrix.StationManagementService.Dtos.ChargingStationDto;
 import com.DevMatrix.StationManagementService.Mapper.ChargingStationMaper;
 import com.DevMatrix.StationManagementService.Services.ChargingStationService;
@@ -42,6 +44,18 @@ public class ChargingStationController {
         }else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PostMapping("UpdateStation/isEdit/{isEdit}")
+    public ResponseEntity<ChargingStationDto> UpdateChargingStation(@PathVariable boolean isEdit, @RequestParam(required = false) Long id,@RequestBody ChargingStationDto stationDto) {
+        ChargingStationDto station = new ChargingStationDto();
+        if(isEdit){
+           station = _chargingStationService.updateStation(id, stationDto);
+        }
+        else{
+            station = _chargingStationService.createStation(stationDto);
+        }
+        return ResponseEntity.ok(station);
     }
 
     @PostMapping("CreateStation")

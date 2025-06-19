@@ -58,6 +58,8 @@ export default {
         localStorage.setItem('token', token);
         localStorage.setItem('role', role);
 
+        localStorage.setItem('user', JSON.stringify(response.data));
+
         this.message = 'Login successful!';
 
         // Redirect based on role

@@ -15,6 +15,9 @@ import DriverBookingsView from '@/views/driver/DriverBookingsView.vue'
 // Owner Views
 import OwnerDashboard from '@/views/owner/OwnerDashboard.vue'
 import OwnerBookingsView from '@/views/owner/OwnerBookingsView.vue'
+import OwnerStationsView from '@/views/owner/OwnerStationsView.vue'
+import OfferSlotsView from '@/views/owner/OfferSlotsView.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -67,6 +70,16 @@ const router = createRouter({
           path: 'bookings',
           name: 'OwnerBookings',
           component: OwnerBookingsView
+        },
+        {
+          path: 'stations',
+          name: 'OwnerStations',
+          component: OwnerStationsView
+        },
+        {
+          path: 'Offers',
+          name: 'OfferSlots',
+          component: OfferSlotsView
         }
       ]
     }

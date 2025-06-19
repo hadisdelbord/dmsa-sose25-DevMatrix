@@ -21,6 +21,7 @@ public class OfferSlotDto {
     private BigDecimal timeSlot;
     private Float pricePerSlot;
     private Boolean isAvailable;
+    private int slotDuration;
 
     private AddressDto address;
 
@@ -68,7 +69,13 @@ public class OfferSlotDto {
         this.slotDate = slotDate;
     }
 
-    
+    public int getSlotDuration() {
+        return slotDuration;
+    }
+
+    public void setSlotDuration(int slotDuration) {
+        this.slotDuration = slotDuration;
+    }
    
     //  public void setChargingStation(ChargingStationDto chargingStation) {
     //     this.chargingStation = chargingStation;
