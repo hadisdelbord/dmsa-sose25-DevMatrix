@@ -80,9 +80,9 @@ public ResponseEntity<List<OfferSlotDto>> getOffersByStationAndDate(
             return ResponseEntity.notFound().build();
         }
     }
-    @GetMapping("GetAvailableOffer")
-    public ResponseEntity<List<AvailableSlotDto>> GetAvailableOffer() {
-        var offerslotWithAddress = _offerSlotService.GetAvailableOffers();
+    @GetMapping("GetAvailableOffer/postalcode/{postalCode}")
+    public ResponseEntity<List<AvailableSlotDto>> GetAvailableOffer(@PathVariable String postalCode) {
+        var offerslotWithAddress = _offerSlotService.GetAvailableOffers(postalCode);
         return ResponseEntity.ok(offerslotWithAddress);
     }
 

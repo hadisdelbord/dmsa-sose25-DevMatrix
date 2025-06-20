@@ -15,7 +15,7 @@ public interface OfferSlotService {
     void createOrUpdateAll(List<OfferSlotDto> dtos);
     OfferSlotDto update(Long id, OfferSlotDto dto);
     boolean delete(Long id);
-    List<AvailableSlotDto> GetAvailableOffers();
+    List<AvailableSlotDto> GetAvailableOffers(String postalCode);
     Optional<OfferAndStationDto> GetOfferWithStationById(long offerId);
     List<OfferSlotDto> GetByStationIdAndDate(Long stationId, LocalDate date);
     

@@ -121,8 +121,8 @@ public class OfferSlotServiceImp implements OfferSlotService {
         return false;
     }
 
-    public List<AvailableSlotDto> GetAvailableOffers(){
-        var availableOffer = _offerSlotRepository.GetAvailableOffers();
+    public List<AvailableSlotDto> GetAvailableOffers(String postalCode){
+        var availableOffer = _offerSlotRepository.GetAvailableOffers(postalCode);
         var offerslotDto = _OfferSlotMapper.toDtoListWithAddress(availableOffer);
         return offerslotDto;
     }

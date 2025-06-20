@@ -204,6 +204,9 @@ const formData = ref({
   address: {postalCode: { code: '' }}
 });
 
+const user = JSON.parse(localStorage.getItem('user'));
+const userId = user?.userId;
+
 
 onMounted(async () => {
   try {
@@ -265,7 +268,7 @@ const handleSubmit = async () => {
   submitted.value = true;
 
   const station = formData.value.station;
-  console.log(station);
+  station.userId = userId;
   // Basic required field check
   if (!station.addressId && !station.address?.id) {
     console.warn("Address is required.");

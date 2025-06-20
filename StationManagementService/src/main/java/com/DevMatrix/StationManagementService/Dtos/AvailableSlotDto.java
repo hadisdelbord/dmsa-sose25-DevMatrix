@@ -23,7 +23,7 @@ public class AvailableSlotDto {
     private BigDecimal timeSlot;
     private Float price;
     private LocalDateTime availableDate;
-   
+    private int slotDuration;
     private AddressDto address;
 
 }

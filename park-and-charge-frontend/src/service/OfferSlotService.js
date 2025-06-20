@@ -8,5 +8,8 @@ export default {
   },
   saveSlots(slots) {
     return api.post('/CreateOrUpdate', slots);
+  },
+  getAvailableOffers(postalCode) {
+    return api.get(`/GetAvailableOffer/postalcode/${postalCode}`);
   }
 };

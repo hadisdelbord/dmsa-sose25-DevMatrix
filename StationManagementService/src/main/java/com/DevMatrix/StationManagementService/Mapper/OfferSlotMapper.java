@@ -25,6 +25,7 @@ public class OfferSlotMapper {
         dto.setPricePerSlot(offer.getPricePerSlot());
         dto.setIsAvailable(offer.getIsAvailable());
         dto.setSlotDate(offer.getSlotDate());
+        dto.setSlotDuration(offer.getSlotDuration());
         if (offer.getChargingStation() != null)
             dto.setStationId(offer.getChargingStation().getId());
         return dto;
@@ -40,6 +41,7 @@ public class OfferSlotMapper {
         availableDto.setPowerOutput(offer.getChargingStation().getPowerOutput());
         availableDto.setTimeSlot(dto.getTimeSlot());
         availableDto.setPrice(dto.getPricePerSlot());
+        availableDto.setSlotDuration(dto.getSlotDuration());
         availableDto.setAvailableDate(dto.getSlotDate());
         AddressDto addressDto = new AddressDto();
         addressDto.setCity(address.getCity());

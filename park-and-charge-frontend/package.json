@@ -16,6 +16,7 @@
     "axios": "^1.9.0",
     "bootstrap": "^5.3.6",
     "bootstrap-icons": "^1.13.1",
+    "leaflet": "^1.9.4",
     "park-and-charge-frontend": "file:",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0",

@@ -5,22 +5,22 @@
     <!-- Search by Postal Code -->
     <div class="mb-4">
       <label class="form-label"><strong>Search by Postal Code</strong></label>
-      <input v-model="searchCode" class="form-control" placeholder="Enter postal code..." />
+      <input v-model="searchCode" class="form-control" placeholder="Enter postal code..." @change="fetchOffers" />
     </div>
 
     <!-- Map -->
     <div id="map" style="height: 400px; margin: 20px;"></div>
 
     <!-- Offers Found -->
-    <div v-if="filteredOffers.length">
+    <div v-if="offers.length">
       <h5>Available Offers</h5>
       <div class="list-group mb-4">
         <div class="list-group-item d-flex justify-content-between align-items-start flex-column"
-             v-for="offer in filteredOffers" :key="offer.offerId">
+             v-for="offer in offers" :key="offer.offerId">
           <div>
             <strong>{{ offer.stationName }}</strong> ({{ offer.powerOutput }})<br />
-            Address: {{ offer.address.city }}, {{ offer.address.street }} ({{ offer.address.postalCode }})<br />
-            Timeslot: {{ offer.timeslot }} | Date: {{ offer.availableDate }} | Price: {{ offer.price }} €
+            Address: {{ offer.address.city }}, {{ offer.address.street }} ({{ offer.address.postalCode.value }})<br />
+            Timeslot: {{ offer.timeSlot }} | Date: {{ offer.availableDate }} | Price: {{ offer.price }} €
           </div>
           <div class="text-end mt-2">
             <button class="btn btn-sm btn-primary" @click="confirmBooking(offer)">Book</button>
@@ -123,6 +123,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import chargerIcon from '@/assets/icons/charger-1.png';
 import mapService from "@/service/MapService.js";
+import offerSlotService from "@/service/OfferSlotService.js";
 
 export default {
   name: 'LocationMap',
@@ -170,7 +171,7 @@ export default {
 </script>
 
 <script setup>
-import {ref, computed, nextTick} from 'vue'
+import {ref, nextTick} from 'vue'
 // import axios from 'axios' // Uncomment when backend ready
 import {Toast} from 'bootstrap'
 
@@ -186,36 +187,33 @@ const paymentMethod = ref('')
 const toastRef = ref(null)
 const toastInstance = ref(null)
 const toastMessage = ref('')
+const offers = ref([])
+const timeslot = ref (String)
 
 // Fake data for development
-const offers = ref([
-  {
-    offerId: 201,
-    stationName: 'FastCharge A',
-    powerOutput: '50kW',
-    timeslot: '30 Minutes',
-    availableDate: '2025-06-01',
-    price: 8.5,
-    address: {city: 'Addis', street: 'Main St', postalCode: '1000'}
-  },
-  {
-    offerId: 202,
-    stationName: 'EV Hub',
-    powerOutput: '75kW',
-    timeslot: '1 Hour',
-    availableDate: '2025-06-02',
-    price: 12.0,
-    address: {city: 'Adama', street: 'Power Rd', postalCode: '1100'}
-  }
-])
+// const offers = ref([
+//   {
+//     offerId: 201,
+//     stationName: 'FastCharge A',
+//     powerOutput: '50kW',
+//     timeslot: '30 Minutes',
+//     availableDate: '2025-06-01',
+//     price: 8.5,
+//     address: {city: 'Addis', street: 'Main St', postalCode: '1000'}
+//   },
+//   {
+//     offerId: 202,
+//     stationName: 'EV Hub',
+//     powerOutput: '75kW',
+//     timeslot: '1 Hour',
+//     availableDate: '2025-06-02',
+//     price: 12.0,
+//     address: {city: 'Adama', street: 'Power Rd', postalCode: '1100'}
+//   }
+// ])
 
 const myBookings = ref([])
 
-const filteredOffers = computed(() =>
-  offers.value.filter(offer =>
-    offer.address.postalCode.includes(searchCode.value.trim())
-  )
-)
 
 const confirmBooking = (offer) => {
   selectedOffer.value = offer
@@ -248,7 +246,7 @@ const submitBooking = async () => {
     userId: userId,
     status: 'RESERVED',
     stationName: offer.stationName,
-    timeslot: offer.timeslot,
+    timeslot: timeslot,
     date: offer.availableDate,
     price: offer.price
   })
@@ -303,11 +301,32 @@ function hideToast() {
 // Prepared API Call (for fetching offers - commented)
 const fetchOffers = async () => {
   try {
-    // const response = await axios.get('http://localhost:8081/api/bookings/getAvailableOffers')
-    // offers.value = response.data
+    const response = await offerSlotService.getAvailableOffers(searchCode.value.trim());
+
+    offers.value = response.data.map(offer => {
+      const formattedPowerOutput = `${offer.powerOutput} kW`;
+
+      const startHour = Math.floor(offer.timeSlot);
+      const startMinute = (offer.timeSlot % 1) * 60;
+      const duration =  offer.slotDuration;
+
+      const start = new Date(0, 0, 0, startHour, startMinute);
+      const end = new Date(start.getTime() + duration * 60000);
+      timeslot.value = `${start.toTimeString().substring(0, 5)} - ${end.toTimeString().substring(0, 5)}`;
+
+      const date = offer.availableDate.split('T')[0]; 
+
+      return {
+        ...offer,
+        powerOutput: formattedPowerOutput,
+        timeSlot: timeslot,
+        availableDate: date
+      };
+    });
+
   } catch (error) {
-    console.error('Error fetching offers:', error)
-    showToast('Failed to fetch offers')
+    console.error('Error fetching offers:', error);
+    showToast('Failed to fetch offers');
   }
 }
 </script>
