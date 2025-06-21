@@ -1,30 +1,28 @@
-// Domain model for shared domain events between microservices
-domain model EventModel {
+context DomainEvents {
 
-    // Aggregate representing restaurant-related domain events
-    Aggregate RestaurantEvents {
+    // Domain event for a newly created restaurant
+    structure RestaurantCreated<domainEvent, valueObject> {
+        immutable string name,                // Name of the created restaurant
+        immutable RestaurantMenu menu         // Menu of the created restaurant
+    }
 
-        // Domain Event to communicate the creation of a new restaurant
-        DomainEvent RestaurantCreated {
-            name: String // Name of the newly created restaurant
-            menu: Menu // Menu of the newly created restaurant
-        }
+    // Value object for the restaurant's menu
+    structure RestaurantMenu<valueObject> {
+        immutable MenuItems menuItems         // List of menu items
+    }
 
-        // Entity representing the Menu, reused from RestaurantModel
-        Entity Menu {
-            items: List<MenuItem> // List of menu items included in the menu
-        }
+    // Value object for a menu item
+    structure MenuItem<valueObject> {
+        immutable string id,                  // Menu item ID
+        immutable string name,                // Menu item name
+        immutable Money price                 // Menu item price
+    }
 
-        // Entity representing an individual Menu Item
-        Entity MenuItem {
-            number: String // Unique number for selection
-            name: String // Name of the dish or drink
-            price: Decimal // Price of the item
-        }
+    // Collection of menu items
+    collection MenuItems { MenuItem i }
+
+    // Simple Money ValueObject defined locally (no import)
+    structure Money<valueObject> {
+        decimal amount
     }
 }
-
-// Using shared artifacts such as Domain Events (e.g., RestaurantCreated) promotes consistency 
-// between services and reduces redundancy. However, it also increases coupling between 
-// microservices, which may reduce their autonomy and complicate independent deployment 
-// and evolution.
