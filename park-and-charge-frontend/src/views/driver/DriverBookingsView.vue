@@ -172,8 +172,8 @@ export default {
 
 <script setup>
 import {ref, nextTick} from 'vue'
-// import axios from 'axios' // Uncomment when backend ready
 import {Toast} from 'bootstrap'
+import bookingService from "@/service/BookingService.js";
 
 const userId = 42
 
@@ -225,17 +225,30 @@ const closeModal = () => {
 }
 
 const submitBooking = async () => {
-  const offer = selectedOffer.value
+  const offer = selectedOffer.value;
 
   // Update offer availability via API (currently commented for fake data)
   try {
-    // await axios.put(`http://localhost:8081/api/bookings/UpdateOffer/OfferId/${offer.offerId}`, {
+    // await offerSlotService.update(`${offer.offerId}`, {
     //   isAvailable: false
     // })
     // showToast('Offer availability updated!')
   } catch (error) {
     console.error('Failed to update offer:', error)
     showToast('Error updating offer availability')
+  }
+
+  // Call bookingService.create() to create a new booking
+  try {
+    await bookingService.create({
+      offerId: offer.offerId,
+      userId: userId,
+      bookingStatus: 'RESERVED'
+    });
+    showToast('Booking created via API!');
+  } catch (error) {
+    console.error('Failed to create booking:', error);
+    showToast('Error creating booking');
   }
 
   // Fake data booking action
@@ -248,11 +261,12 @@ const submitBooking = async () => {
     timeslot: offer.timeSlot,
     date: offer.availableDate,
     price: offer.price
-  })
+  });
 
-  closeModal()
-  showToast('Booking successful!')
+  closeModal();
+  showToast('Booking successful!');
 }
+
 
 // Payment modal handlers
 const openPaymentModal = (booking) => {
