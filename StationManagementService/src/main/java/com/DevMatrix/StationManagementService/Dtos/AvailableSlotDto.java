@@ -20,7 +20,7 @@ public class AvailableSlotDto {
     private Long offerId;
     private String stationName;
     private Float powerOutput;
-    private BigDecimal timeSlot;
+    private String timeSlot;
     private Float price;
     private LocalDateTime availableDate;
     private int slotDuration;

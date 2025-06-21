@@ -188,7 +188,6 @@ const toastRef = ref(null)
 const toastInstance = ref(null)
 const toastMessage = ref('')
 const offers = ref([])
-const timeslot = ref (String)
 
 // Fake data for development
 // const offers = ref([
@@ -246,7 +245,7 @@ const submitBooking = async () => {
     userId: userId,
     status: 'RESERVED',
     stationName: offer.stationName,
-    timeslot: timeslot,
+    timeslot: offer.timeSlot,
     date: offer.availableDate,
     price: offer.price
   })
@@ -306,20 +305,21 @@ const fetchOffers = async () => {
     offers.value = response.data.map(offer => {
       const formattedPowerOutput = `${offer.powerOutput} kW`;
 
-      const startHour = Math.floor(offer.timeSlot);
-      const startMinute = (offer.timeSlot % 1) * 60;
-      const duration =  offer.slotDuration;
+      // const startHour = Math.floor(offer.timeSlot);
+      // console.log(startHour);
+      // const startMinute = (offer.timeSlot % 1) * 60;
+      // console.log(startMinute);
+      // const duration =  offer.slotDuration;
 
-      const start = new Date(0, 0, 0, startHour, startMinute);
-      const end = new Date(start.getTime() + duration * 60000);
-      timeslot.value = `${start.toTimeString().substring(0, 5)} - ${end.toTimeString().substring(0, 5)}`;
+      // const start = new Date(0, 0, 0, startHour, startMinute);
+      // const end = new Date(start.getTime() + duration * 60000);
+      // timeslot.value = `${start.toTimeString().substring(0, 5)} - ${end.toTimeString().substring(0, 5)}`;
 
       const date = offer.availableDate.split('T')[0]; 
 
       return {
         ...offer,
         powerOutput: formattedPowerOutput,
-        timeSlot: timeslot,
         availableDate: date
       };
     });

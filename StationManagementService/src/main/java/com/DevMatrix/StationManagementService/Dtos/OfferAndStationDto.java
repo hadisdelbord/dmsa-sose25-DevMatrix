@@ -18,7 +18,7 @@ import lombok.Setter;
 @Builder
 public class OfferAndStationDto {
     private String stationName;
-    private BigDecimal timeSlot;
+    private String timeSlot;
     private Float price;
     private LocalDateTime availableDate;
 }

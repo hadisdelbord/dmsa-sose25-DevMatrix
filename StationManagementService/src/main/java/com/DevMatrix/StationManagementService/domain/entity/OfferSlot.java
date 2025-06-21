@@ -24,7 +24,7 @@ public class OfferSlot {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private BigDecimal timeSlot;
+    private String timeSlot;
     private Float pricePerSlot;
     private Boolean isAvailable;
     private LocalDateTime slotDate;
@@ -48,11 +48,11 @@ public class OfferSlot {
     }
 
     // Getter and Setter for timeSlot
-    public BigDecimal getTimeSlot() {
+    public String getTimeSlot() {
         return timeSlot;
     }
 
-    public void setTimeSlot(BigDecimal timeSlot) {
+    public void setTimeSlot(String timeSlot) {
         this.timeSlot = timeSlot;
     }
 

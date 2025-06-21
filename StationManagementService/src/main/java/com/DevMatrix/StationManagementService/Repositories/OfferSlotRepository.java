@@ -20,5 +20,5 @@ public interface OfferSlotRepository extends CrudRepository<OfferSlot, Long> {
     @Query("SELECT o FROM OfferSlot o JOIN FETCH o.chargingStation cs JOIN FETCH cs.address a WHERE o.isAvailable = true AND a.postalCode.code = :postalcode")
     List<OfferSlot> GetAvailableOffers( String postalcode);
     List<OfferSlot> findByChargingStationIdAndSlotDateBetween(long stationId, LocalDateTime startOfDay,LocalDateTime endOfDay);
-    Optional<OfferSlot> findByChargingStationIdAndSlotDateAndTimeSlot( long stationId, LocalDateTime slotDate  ,BigDecimal timeSlot);
+    Optional<OfferSlot> findByChargingStationIdAndSlotDateAndTimeSlot( long stationId, LocalDateTime slotDate  ,String timeSlot);
 }

@@ -18,7 +18,7 @@ public class OfferSlotDto {
     private Long id;
     private Long stationId;
     private LocalDateTime slotDate;
-    private BigDecimal timeSlot;
+    private String timeSlot;
     private Float pricePerSlot;
     private Boolean isAvailable;
     private int slotDuration;
@@ -34,11 +34,11 @@ public class OfferSlotDto {
     }
 
     // Getter and Setter for timeSlot
-    public BigDecimal getTimeSlot() {
+    public String getTimeSlot() {
         return timeSlot;
     }
 
-    public void setTimeSlot(BigDecimal timeSlot) {
+    public void setTimeSlot(String timeSlot) {
         this.timeSlot = timeSlot;
     }
 
