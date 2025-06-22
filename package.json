@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@faker-js/faker": "^9.8.0",
-    "leaflet": "^1.9.4"
-  }
-}

@@ -1,26 +1,24 @@
-// Domain model for the Restaurant Service
-domain model RestaurantModel {
-    
-    // Aggregate representing the Restaurant concept
-    Aggregate Restaurant {
-        
-        // Entity representing a Restaurant with name, id, and menu
-        Entity Restaurant {
-            name: String // Name of the restaurant
-            id: String // Unique identifier for the restaurant
-            menu: Menu // Menu offered by the restaurant
-        }
+context Restaurant {
 
-        // Entity representing the Menu offered by the restaurant
-        Entity Menu {
-            items: List<MenuItem> // List of menu items (dishes or drinks)
-        }
-
-        // Entity representing an individual Menu Item (Dish or Drink)
-        Entity MenuItem {
-            number: String // Unique number for selection
-            name: String // Name of the dish or drink
-            price: Decimal // Price of the item
-        }
+    // Restaurant aggregate root entity
+    structure Restaurant<entity> {
+        long id<identifier>,            // Unique restaurant identifier
+        string name,                    // Name of the restaurant
+        RestaurantMenu menu             // Menu offered by the restaurant
     }
+
+    // Value object representing the restaurant's menu
+    structure RestaurantMenu<valueObject> {
+        MenuItems menuItems             // List of menu items
+    }
+
+    // Value object representing a single menu item (dish or drink)
+    structure MenuItem<valueObject> {
+        string id,                      // Unique menu item identifier (number)
+        string name,                    // Name of the dish or drink
+        decimal price                   // Price of the item
+    }
+
+    // Collection of MenuItems
+    collection MenuItems { MenuItem i }
 }

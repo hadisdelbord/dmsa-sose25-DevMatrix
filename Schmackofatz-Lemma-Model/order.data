@@ -1,45 +1,97 @@
-// Domain model for the Order Service
-domain model OrderModel {
-    
-    // Aggregate representing an Order
-    Aggregate Order {
-        
-        // Entity representing an Order
-        Entity Order {
-            id: String // Unique identifier of the order
-            version: Integer // Version number for concurrency control
-            status: OrderStatus // Current status of the order
-            customerId: Integer // Assigned customer ID (-1 if not yet assigned)
-            restaurantId: Integer // Assigned restaurant ID (-1 if not yet assigned)
-            items: List<OrderItem> // List of ordered items
-            minOrderValue: Decimal // Minimum order value set by the restaurant
-            deliveryTime: String // Planned delivery time
-            deliveryAddress: String // Customer's delivery address
-        }
+context Order {
 
-        // Entity representing an individual item within an Order
-        Entity OrderItem {
-            quantity: Integer // Number of units ordered
-            number: String // Unique number of the item (matches MenuItem number)
-            name: String // Name of the item
-            unitPrice: Decimal // Price per unit
-        }
+    // Order aggregate root entity
+    structure Order<aggregate, entity> {
+        long id<identifier>,                   // Unique order identifier
+        immutable long version,                // Version for concurrency
+        immutable OrderState state,            // Current state of the order
+        immutable long customerId = -1,        // Initially unassigned
+        immutable long restaurantId = -1,      // Initially unassigned
 
-        // Enumeration representing possible states of an Order
-        Enum OrderStatus {
-            ACCEPTED // Order has been accepted
-            PENDING // Order acceptance is still pending
-            REJECTED // Order has been rejected
-            CHANGE_PENDING // Change confirmation is still pending
-        }
+        // Order items
+        immutable OrderLineItems orderLineItems<part>, 
 
-        // Domain Service implementing order-related functionalities
-        DomainService OrderDomainService {
-            operation takeOrder() // Place a new order
-            operation updateOrder() // Update an existing order
-            operation cancelOrder() // Cancel an order
-            operation acceptOrder() // Accept an order
-            operation rejectOrder() // Reject an order
-        }
+        // Organizational order information
+        hide immutable DeliveryInformation deliveryInformation<part>, 
+
+        // Minimum order value
+        hide immutable Money orderMinimum<part>, 
+
+        // Function to calculate the total price of the order
+        function Money getOrderTotal()
     }
+
+    // Possible states of an order
+    enum OrderState {
+        APPROVED,
+        APPROVAL_PENDING,
+        REJECTED,
+        REVISION_PENDING
+    }
+
+    // Value object for a single item in the order
+    structure OrderLineItem<valueObject> {
+        int quantity,                  // Quantity of the item
+        string menuItemId,             // Menu item identifier
+        string name,                   // Name of the item
+        Money price,                   // Unit price
+
+        // Function to calculate price difference if quantity changes
+        function Money deltaForChangedQuantity(int newQuantity),
+
+        // Function to get total price of this order item
+        function Money getTotal
+    }
+
+    // Value object for handling multiple order items
+    structure OrderLineItems<valueObject> {
+        OrderLineItemsType lineItems,         // Collection of OrderLineItem
+
+        // Find specific order item by menuItemId
+        function OrderLineItem findOrderLineItem(string id),
+
+        // Calculate total price of all items
+        function Money orderTotal
+    }
+
+    // Collection of order items
+    collection OrderLineItemsType { OrderLineItem i }
+
+    // Organizational information for delivery
+    structure DeliveryInformation<valueObject> {
+        date deliveryTime,                    // Requested delivery time
+        Address deliveryAddress               // Customer delivery address
+    }
+
+    // Address value object
+    structure Address<valueObject> {
+        immutable string street1,
+        immutable string street2,
+        immutable string city,
+        immutable string state,
+        immutable string zip
+    }
+
+    // Simple Money ValueObject to represent monetary values
+    structure Money<valueObject> {
+        decimal amount
+    }
+
+    // Domain service for order operations
+    structure OrderService<service> {
+        function Order createOrder(long consumerId, long restaurantId, MenuItemIdAndQuantityList lineItems),
+        function Order updateOrder(long orderId, Order order),
+        function Order cancel(long orderId),
+        procedure approveOrder(long orderId),
+        procedure rejectOrder(long orderId)
+    }
+
+    // Value object for menu item ID and quantity (input for createOrder)
+    structure MenuItemIdAndQuantity<valueObject> {
+        string menuItemId,
+        immutable int quantity
+    }
+
+    // Collection of MenuItemIdAndQuantity
+    collection MenuItemIdAndQuantityList { MenuItemIdAndQuantity itemQuantity }
 }
