@@ -65,4 +65,15 @@ public class UserService {
                 token
         );
     }
+
+    public UserResponse getUserByEmail(String email) {
+    User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+     return new UserResponse(
+            user.getUserId(),
+            user.getName(),
+            user.getEmail(),
+            user.getRole().name()
+    );
+}
 }

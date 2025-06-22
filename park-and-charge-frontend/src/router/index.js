@@ -85,5 +85,92 @@ const router = createRouter({
     }
   ]
 })
+// Helper function to get current user
+const getCurrentUser = () => {
+  try {
+    const userData = localStorage.getItem('user');
+    if (!userData) {
+      return null;
+    }
+    const user = JSON.parse(userData);
+    
+    // Check if user object has required properties
+    if (!user.token || !user.email || !user.role) {
+      console.warn('Invalid user data in localStorage, clearing...');
+      localStorage.removeItem('user');
+      return null;
+    }
+    
+    return user;
+  } catch (error) {
+    console.error('Error parsing user data from localStorage:', error);
+    localStorage.removeItem('user'); // Clear corrupted data
+    return null;
+  }
+}
 
+
+router.beforeEach((to, from, next) => {
+
+  const user = getCurrentUser();
+  const isAuthenticated = !!(user && user.token);
+  const userRole = user?.role;
+
+  console.log('User authentication status:', {
+    isAuthenticated,
+    userRole,
+    email: user?.email,
+    hasToken: !!user?.token,
+    userExists: !!user
+  });
+
+  if (to.path === '/') {
+    if (isAuthenticated) {
+      const redirectPath = userRole === 'OWNER' ? '/owner' : '/driver';
+      next(redirectPath);
+    } else {
+      next('/login');
+    }
+    return;
+  }
+  if (to.meta.guest) {
+    if (isAuthenticated) {
+      const redirectPath = userRole === 'OWNER' ? '/owner' : '/driver';
+      next(redirectPath);
+      return;
+    }
+    next();
+    return;
+  }
+  if (to.meta.requiresAuth || to.path.startsWith('/owner') || to.path.startsWith('/driver')) {
+    
+    if (!isAuthenticated) {
+      console.warn('Authentication required, redirecting to login');
+      // Clear any invalid user data
+      localStorage.removeItem('user');
+      alert('Please login to access this page.');
+      next('/login');
+      return;
+    }
+    let requiredRole = to.meta.requiredRole;
+    if (!requiredRole) {
+      if (to.path.startsWith('/owner')) {
+        requiredRole = 'OWNER';
+      } else if (to.path.startsWith('/driver')) {
+        requiredRole = 'DRIVER';
+      }
+    }
+    if (requiredRole && userRole !== requiredRole) {
+      console.warn(`Access denied: User role '${userRole}' does not match required role '${requiredRole}'`);
+      const pageType = requiredRole === 'OWNER' ? 'Owner' : 'Driver';
+      const userType = userRole === 'OWNER' ? 'Owner' : 'Driver';
+      
+      alert(`Access Denied!\n\nThis page is only accessible to ${pageType} users.\nYou are currently logged in as: ${userType}\n\nRedirecting to your dashboard...`);
+      const redirectPath = userRole === 'OWNER' ? '/owner' : '/driver';
+      next(redirectPath);
+      return;
+    }
+  }
+  next();
+});
 export default router

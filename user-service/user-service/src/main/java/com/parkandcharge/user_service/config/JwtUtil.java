@@ -10,8 +10,9 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private static final String SECRET_KEY = "DevMatrix2025_SecretKey_HardToGuess!";
     private final long expirationTime = 86400000; // 24 hours in milliseconds
+    private final Key secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 
     public String generateToken(String email, String role) {
         return Jwts.builder()
@@ -19,7 +20,7 @@ public class JwtUtil {
                 .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-                .signWith(secretKey)
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 

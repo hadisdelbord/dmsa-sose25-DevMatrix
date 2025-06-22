@@ -3,6 +3,7 @@ package com.DevMatrix.StationManagementService.Api;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,21 +19,30 @@ import com.DevMatrix.StationManagementService.Dtos.AddressDto;
 import com.DevMatrix.StationManagementService.Dtos.ChargingStationDto;
 import com.DevMatrix.StationManagementService.Mapper.ChargingStationMaper;
 import com.DevMatrix.StationManagementService.Services.ChargingStationService;
+import com.DevMatrix.StationManagementService.security.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 
-@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("api/ChargingStations")
 public class ChargingStationController {
     private ChargingStationService _chargingStationService;
+    private final JwtUtil jwtUtil;
     
     ChargingStationController(ChargingStationService chargingStationService,
-     ChargingStationMaper chargingStationMapper){
+     ChargingStationMaper chargingStationMapper, JwtUtil jwtUtil){
         this._chargingStationService = chargingStationService;
+        this.jwtUtil = jwtUtil;
     }
 
     @GetMapping("GetAll")
-    public ResponseEntity<List<ChargingStationDto>> GetAll() {
-        List<ChargingStationDto> lstAddress = _chargingStationService.getAllStations();
+    @PreAuthorize("hasAuthority('OWNER')")
+    public ResponseEntity<List<ChargingStationDto>> GetAll(HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+         if (token != null && token.startsWith("Bearer ")) {
+        token = token.substring(7);
+         }
+         String email = jwtUtil.extractEmail(token);
+        List<ChargingStationDto> lstAddress = _chargingStationService.getAllStations(email);
         return ResponseEntity.ok(lstAddress);
     }
 
@@ -47,21 +57,23 @@ public class ChargingStationController {
     }
 
     @PostMapping("UpdateStation/isEdit/{isEdit}")
-    public ResponseEntity<ChargingStationDto> UpdateChargingStation(@PathVariable boolean isEdit, @RequestParam(required = false) Long id,@RequestBody ChargingStationDto stationDto) {
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<ChargingStationDto> UpdateChargingStation(@PathVariable boolean isEdit, @RequestParam(required = false) Long id,
+    @RequestBody ChargingStationDto stationDto,HttpServletRequest request) {
+    String token = request.getHeader("Authorization");
+    if (token != null && token.startsWith("Bearer ")) {
+        token = token.substring(7);
+    }
+
+    String email = jwtUtil.extractEmail(token);
         ChargingStationDto station = new ChargingStationDto();
         if(isEdit){
            station = _chargingStationService.updateStation(id, stationDto);
         }
         else{
-            station = _chargingStationService.createStation(stationDto);
+            station = _chargingStationService.createStation(stationDto,email);
         }
         return ResponseEntity.ok(station);
-    }
-
-    @PostMapping("CreateStation")
-    public ResponseEntity<ChargingStationDto> createStation(@RequestBody ChargingStationDto dto) {
-        ChargingStationDto created = _chargingStationService.createStation(dto);
-        return ResponseEntity.ok(created);
     }
 
     @PutMapping("UpdateStation/StationId/{id}")

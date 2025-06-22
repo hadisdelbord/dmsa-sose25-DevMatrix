@@ -6,9 +6,9 @@ import java.util.List;
 import com.DevMatrix.StationManagementService.Dtos.ChargingStationDto;
 
 public interface ChargingStationService {
-    List<ChargingStationDto> getAllStations();
+    List<ChargingStationDto> getAllStations(String email);
     ChargingStationDto getStationById(Long id);
-    ChargingStationDto createStation(ChargingStationDto dto);
+    ChargingStationDto createStation(ChargingStationDto dto, String email);
     ChargingStationDto updateStation(Long id, ChargingStationDto dto);
     boolean deleteStation(Long id);
 }

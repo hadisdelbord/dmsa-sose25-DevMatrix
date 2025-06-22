@@ -43,7 +43,50 @@
 
 <script setup>
 const logout = () => {
-  // Optional: clear tokens or session storage
+   const getCurrentUser = () => {
+  try {
+    const userData = localStorage.getItem('user');
+    if (!userData) {
+      return null;
+    }
+    const user = JSON.parse(userData);
+    
+    // Check if user object has required properties
+    if (!user.token || !user.email || !user.role) {
+      console.warn('Invalid user data in localStorage, clearing...');
+      localStorage.removeItem('user');
+      return null;
+    }
+    
+    return user;
+  } catch (error) {
+    console.error('Error parsing user data from localStorage:', error);
+    localStorage.removeItem('user'); // Clear corrupted data
+    return null;
+  }
+}
+ const user = getCurrentUser();
+if (user) {
+    console.log('Logging out user:', user.email);
+    
+    // Method 1: Clear the token from the user object and update localStorage
+    user.token = '';
+    user.expired = true;
+    user.loggedOut = new Date().toISOString();
+    
+    // Update localStorage with expired user (optional - for debugging)
+    localStorage.setItem('user', JSON.stringify(user));
+    
+    // Method 2: Or just remove the user completely
+    localStorage.removeItem('user');
+  }
+  
+  // Clear all storage to be safe
+  localStorage.clear();
+  sessionStorage.clear();
+    document.cookie.split(";").forEach(function(c) { 
+    document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+  });
   alert('Logged out!');
   window.location.href = '/login';
 };

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,6 +46,7 @@ public class OfferSlotController {
     }
 
     @GetMapping("GetOfferByStation/station/{stationId}")
+    @PreAuthorize("hasRole('OWNER')")
 public ResponseEntity<List<OfferSlotDto>> getOffersByStationAndDate(
     @PathVariable Long stationId,
     @RequestParam("slotDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate slotDate
@@ -55,6 +57,7 @@ public ResponseEntity<List<OfferSlotDto>> getOffersByStationAndDate(
 
 
     @PostMapping("CreateOrUpdate")
+    @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<String> createOrUpdateAll(@RequestBody List<OfferSlotDto> dtos) {
          _offerSlotService.createOrUpdateAll(dtos); // No return value needed if it's just a save
     return ResponseEntity.ok("Offer slots saved successfully.");
@@ -81,12 +84,14 @@ public ResponseEntity<List<OfferSlotDto>> getOffersByStationAndDate(
         }
     }
     @GetMapping("GetAvailableOffer/postalcode/{postalCode}")
+    @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<List<AvailableSlotDto>> GetAvailableOffer(@PathVariable String postalCode) {
         var offerslotWithAddress = _offerSlotService.GetAvailableOffers(postalCode);
         return ResponseEntity.ok(offerslotWithAddress);
     }
 
     @GetMapping("GetOfferById/OfferId/{offer_id}")
+    @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<OfferAndStationDto> GetOfferById(@PathVariable Long offer_id) {
         var offerslotWithStation = _offerSlotService.GetOfferWithStationById(offer_id);
         return offerslotWithStation.map(ResponseEntity::ok)

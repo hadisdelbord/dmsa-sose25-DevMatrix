@@ -33,4 +33,10 @@ public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequest request) {
             return ResponseEntity.status(401).body(e.getMessage());
         }
     }
+
+     @GetMapping("/GetUserInfo")
+    public ResponseEntity<UserResponse> getUserByEmail(@RequestParam String email) {
+        UserResponse response = userService.getUserByEmail(email);
+        return ResponseEntity.ok(response);
+    }
 }
