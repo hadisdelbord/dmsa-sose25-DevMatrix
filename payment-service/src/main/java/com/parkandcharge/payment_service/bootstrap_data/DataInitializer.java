@@ -1,29 +1,45 @@
 package com.parkandcharge.payment_service.bootstrap_data;
 
+import com.parkandcharge.payment_service.model.Payment;
+import com.parkandcharge.payment_service.repository.PaymentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
-import com.parkandcharge.payment_service.model.Booking;
-import com.parkandcharge.payment_service.model.BookingStatus;
-import com.parkandcharge.payment_service.repository.BookingRepository;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
 
-    private final BookingRepository bookingRepository;
-
-    public DataInitializer(BookingRepository bookingRepository) {
-        this.bookingRepository = bookingRepository;
-    }
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     @Override
-    public void run(String... args) {
-        if (bookingRepository.count() == 0) {
-            bookingRepository.save(new Booking(null, 101L, 201L, BookingStatus.RESERVED));
-            bookingRepository.save(new Booking(null, 102L, 202L, BookingStatus.CONFIRMED));
-            bookingRepository.save(new Booking(null, 103L, 203L, BookingStatus.COMPLETED));
-            bookingRepository.save(new Booking(null, 104L, 204L, BookingStatus.CANCELED));
-            System.out.println("✅ Booking test data inserted.");
-        }
+    public void run(String... args) throws Exception {
+        paymentRepository.deleteAll();
+
+        java.sql.Date currentDate = new java.sql.Date(System.currentTimeMillis());
+
+        Payment payment1 = new Payment();
+        payment1.setBookingId(1001L);
+        payment1.setBookingAmount(150.0f);
+        payment1.setBookingDate(currentDate);
+        payment1.setPaymentMethod("Credit Card");
+
+        Payment payment2 = new Payment();
+        payment2.setBookingId(1002L);
+        payment2.setBookingAmount(200.5f);
+        payment2.setBookingDate(currentDate);
+        payment2.setPaymentMethod("PayPal");
+
+        Payment payment3 = new Payment();
+        payment3.setBookingId(1001L);
+        payment3.setBookingAmount(99.99f);
+        payment3.setBookingDate(currentDate);
+        payment3.setPaymentMethod("Cash");
+
+        paymentRepository.save(payment1);
+        paymentRepository.save(payment2);
+        paymentRepository.save(payment3);
+
+        System.out.println("Sample payment data initialized.");
     }
 }
