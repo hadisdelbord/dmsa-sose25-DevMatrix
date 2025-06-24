@@ -22,7 +22,6 @@ import com.DevMatrix.StationManagementService.Dtos.OfferAndStationDto;
 import com.DevMatrix.StationManagementService.Dtos.OfferSlotDto;
 import com.DevMatrix.StationManagementService.Services.OfferSlotService;
 
-@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("api/OfferSlots")
 public class OfferSlotController {
@@ -46,7 +45,6 @@ public class OfferSlotController {
     }
 
     @GetMapping("GetOfferByStation/station/{stationId}")
-    @PreAuthorize("hasRole('OWNER')")
 public ResponseEntity<List<OfferSlotDto>> getOffersByStationAndDate(
     @PathVariable Long stationId,
     @RequestParam("slotDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate slotDate

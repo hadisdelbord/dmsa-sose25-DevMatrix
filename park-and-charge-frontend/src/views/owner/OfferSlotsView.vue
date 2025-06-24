@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-md-6">
         <label class="form-label">Select Charging Station</label>
-        <select class="form-select" v-model="selectedStationId" @change="loadOfferSlots">
+        <select class="form-select" v-model="selectedStationId">
           <option disabled value="">Select a station</option>
           <option v-for="station in chargingStations" :key="station.id" :value="station.id">
             {{ station.name }}
