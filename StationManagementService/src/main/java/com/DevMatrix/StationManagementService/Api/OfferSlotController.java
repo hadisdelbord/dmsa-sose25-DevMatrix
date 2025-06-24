@@ -57,7 +57,6 @@ public ResponseEntity<List<OfferSlotDto>> getOffersByStationAndDate(
 
 
     @PostMapping("CreateOrUpdate")
-    @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<String> createOrUpdateAll(@RequestBody List<OfferSlotDto> dtos) {
          _offerSlotService.createOrUpdateAll(dtos); // No return value needed if it's just a save
     return ResponseEntity.ok("Offer slots saved successfully.");
@@ -84,14 +83,12 @@ public ResponseEntity<List<OfferSlotDto>> getOffersByStationAndDate(
         }
     }
     @GetMapping("GetAvailableOffer/postalcode/{postalCode}")
-    @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<List<AvailableSlotDto>> GetAvailableOffer(@PathVariable String postalCode) {
         var offerslotWithAddress = _offerSlotService.GetAvailableOffers(postalCode);
         return ResponseEntity.ok(offerslotWithAddress);
     }
 
     @GetMapping("GetOfferById/OfferId/{offer_id}")
-    @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<OfferAndStationDto> GetOfferById(@PathVariable Long offer_id) {
         var offerslotWithStation = _offerSlotService.GetOfferWithStationById(offer_id);
         return offerslotWithStation.map(ResponseEntity::ok)
