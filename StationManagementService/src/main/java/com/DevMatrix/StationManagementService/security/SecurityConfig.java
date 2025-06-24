@@ -31,8 +31,6 @@ public class SecurityConfig {
             .cors(Customizer.withDefaults()) // Enable CORS
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/users/login", "/users/register").permitAll()
-                .requestMatchers("http://localhost:5173/owner/**").hasRole("OWNER")
-                .requestMatchers("http://localhost:5173/driver/**").hasRole("DRIVER")
                 .requestMatchers("/api/**").authenticated()
                 .anyRequest().authenticated()
             )

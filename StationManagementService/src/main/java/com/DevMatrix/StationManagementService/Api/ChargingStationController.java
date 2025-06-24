@@ -35,7 +35,6 @@ public class ChargingStationController {
     }
 
     @GetMapping("GetAll")
-    @PreAuthorize("hasAuthority('OWNER')")
     public ResponseEntity<List<ChargingStationDto>> GetAll(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
          if (token != null && token.startsWith("Bearer ")) {
@@ -57,7 +56,6 @@ public class ChargingStationController {
     }
 
     @PostMapping("UpdateStation/isEdit/{isEdit}")
-    @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<ChargingStationDto> UpdateChargingStation(@PathVariable boolean isEdit, @RequestParam(required = false) Long id,
     @RequestBody ChargingStationDto stationDto,HttpServletRequest request) {
     String token = request.getHeader("Authorization");
