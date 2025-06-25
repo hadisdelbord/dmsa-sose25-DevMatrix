@@ -1,7 +1,30 @@
 <template>
   <div>
     <h2 class="mb-4">Owner Statistics</h2>
-    <!-- Next: stats circles, filters, table -->
+    <!-- Stats Circles -->
+    <div class="d-flex justify-content-center gap-4 mb-4">
+      <div class="text-center" style="width: 120px;">
+        <div class="rounded-circle bg-primary bg-opacity-25 text-primary fw-bold d-flex align-items-center justify-content-center"
+            style="width: 100px; height: 100px; font-size: 1.3rem; margin: 0 auto;">
+          {{ totalPrice.toFixed(2) }} €
+        </div>
+        <div class="mt-2">Total Price</div>
+      </div>
+      <div class="text-center" style="width: 120px;">
+        <div class="rounded-circle bg-success bg-opacity-25 text-success fw-bold d-flex align-items-center justify-content-center"
+            style="width: 100px; height: 100px; font-size: 1.3rem; margin: 0 auto;">
+          {{ totalUsageKWh }} kWh
+        </div>
+        <div class="mt-2">Total Usage</div>
+      </div>
+      <div class="text-center" style="width: 120px;">
+        <div class="rounded-circle bg-info bg-opacity-25 text-info fw-bold d-flex align-items-center justify-content-center"
+            style="width: 100px; height: 100px; font-size: 1.3rem; margin: 0 auto;">
+          {{ pricePerKWh.toFixed(2) }} €/kWh
+        </div>
+        <div class="mt-2">Avg Price</div>
+      </div>
+    </div>
   </div>
 </template>
 
