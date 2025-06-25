@@ -26,6 +26,11 @@
           </router-link>
         </li>
         <li class="nav-item mb-2">
+          <router-link to="/owner/statistics" class="nav-link text-white" exact-active-class="router-link-active">
+            <i class="bi bi-bar-chart-line-fill me-2"></i> Statistics
+          </router-link>
+        </li>
+        <li class="nav-item mb-2">
           <router-link to="/profile" class="nav-link text-white" exact-active-class="router-link-active">
             <i class="bi bi-person-circle me-2"></i> Profile
           </router-link>
