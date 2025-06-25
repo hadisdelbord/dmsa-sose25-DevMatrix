@@ -1,4 +1,3 @@
-<!-- src/views/OwnerStatistics.vue -->
 <template>
   <div>
     <h2>Owner Statistics</h2>
