@@ -3,6 +3,15 @@
     <h2 class="mb-4">Owner Statistics</h2>
     <!-- Stats Circles -->
     <div class="d-flex justify-content-center gap-4 mb-4">
+      <!-- Total Bookings -->
+      <div class="text-center" style="width: 120px;">
+        <div class="rounded-circle bg-warning bg-opacity-25 text-warning fw-bold d-flex align-items-center justify-content-center"
+            style="width: 100px; height: 100px; font-size: 1.3rem; margin: 0 auto;">
+          {{ bookings.length }}
+        </div>
+        <div class="mt-2">Total Bookings</div>
+      </div>
+      <!-- Total Price -->
       <div class="text-center" style="width: 120px;">
         <div class="rounded-circle bg-primary bg-opacity-25 text-primary fw-bold d-flex align-items-center justify-content-center"
             style="width: 100px; height: 100px; font-size: 1.3rem; margin: 0 auto;">
@@ -10,6 +19,7 @@
         </div>
         <div class="mt-2">Total Price</div>
       </div>
+      <!-- Total Usage -->
       <div class="text-center" style="width: 120px;">
         <div class="rounded-circle bg-success bg-opacity-25 text-success fw-bold d-flex align-items-center justify-content-center"
             style="width: 100px; height: 100px; font-size: 1.3rem; margin: 0 auto;">
@@ -17,6 +27,7 @@
         </div>
         <div class="mt-2">Total Usage</div>
       </div>
+      <!-- Price per kWh -->
       <div class="text-center" style="width: 120px;">
         <div class="rounded-circle bg-info bg-opacity-25 text-info fw-bold d-flex align-items-center justify-content-center"
             style="width: 100px; height: 100px; font-size: 1.3rem; margin: 0 auto;">
@@ -25,6 +36,7 @@
         <div class="mt-2">Avg Price</div>
       </div>
     </div>
+
     <!-- Filters Row -->
     <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between mb-4">
       <!-- Stations Multi-checkbox -->
