@@ -73,9 +73,6 @@
           </div>
         </div>
       </div>
-
-
-
       <!-- Time Dropdown -->
       <div>
         <label class="fw-semibold me-2">Time:</label>
@@ -92,8 +89,44 @@
         <button class="btn btn-outline-secondary" @click="resetFilters">Reset Filters</button>
       </div>
     </div>
-    
-
+    <!-- Bookings Table -->
+    <table class="table table-bordered table-hover mt-4">
+      <thead class="table-light">
+        <tr>
+          <th>Station</th>
+          <th>Customer</th>
+          <th>Date/Time</th>
+          <th>Status</th>
+          <th>Usage (kWh)</th>
+          <th>Total Price (€)</th>
+          <th>Price per kWh (€)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="b in bookings" :key="b.stationId + b.customerName + b.dateTime">
+          <td>{{ b.stationId }}</td>
+          <td>{{ b.customerName }}</td>
+          <td>{{ b.dateTime }}</td>
+          <td>
+            <span
+              class="badge"
+              :class="{
+                'bg-secondary': b.status === 'COMPLETED',
+                'bg-success': b.status === 'CONFIRMED',
+                'bg-warning': b.status === 'RESERVED',
+                'bg-danger': b.status === 'CANCELED'
+              }"
+            >{{ b.status }}</span>
+          </td>
+          <td>{{ b.usageKWh }}</td>
+          <td>{{ b.totalPrice.toFixed(2) }}</td>
+          <td>{{ b.pricePerKWh.toFixed(2) }}</td>
+        </tr>
+        <tr v-if="!bookings.length">
+          <td colspan="7" class="text-center text-muted">No bookings found for the selected filter.</td>
+        </tr>
+      </tbody>
+    </table> 
   </div>
 </template>
 
