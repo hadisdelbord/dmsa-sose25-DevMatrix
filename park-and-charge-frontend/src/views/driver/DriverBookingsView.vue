@@ -16,7 +16,7 @@
       <h5>Available Offers</h5>
       <div class="list-group mb-4">
         <div class="list-group-item d-flex justify-content-between align-items-start flex-column"
-             v-for="offer in offers" :key="offer.offerId">
+          v-for="offer in offers" :key="offer.offerId">
           <div>
             <strong>{{ offer.stationName }}</strong> ({{ offer.powerOutput }})<br />
             Address: {{ offer.address.city }}, {{ offer.address.street }} ({{ offer.address.postalCode.value }})<br />
@@ -33,7 +33,8 @@
     <div v-if="showModal" class="modal-backdrop">
       <div class="modal-content bg-white p-4 rounded shadow">
         <h5>Confirm Booking</h5>
-        <p>Do you want to book the offer at <strong>{{ selectedOffer.stationName }}</strong> on {{ selectedOffer.availableDate }}?</p>
+        <p>Do you want to book the offer at <strong>{{ selectedOffer.stationName }}</strong> on {{
+          selectedOffer.availableDate }}?</p>
         <div class="text-end">
           <button class="btn btn-success me-2" @click="submitBooking">Yes, Book</button>
           <button class="btn btn-secondary" @click="closeModal">Cancel</button>
@@ -68,49 +69,49 @@
     <h5>Your Bookings</h5>
     <table class="table table-striped">
       <thead>
-      <tr>
-        <th>Booking ID</th>
-        <th>Status</th>
-        <th>Station</th>
-        <th>Date</th>
-        <th>Timeslot</th>
-        <th>Price</th>
-        <th>Actions</th>
-      </tr>
+        <tr>
+          <th>Booking ID</th>
+          <th>Status</th>
+          <th>Station</th>
+          <th>Date</th>
+          <th>Timeslot</th>
+          <th>Price</th>
+          <th>Actions</th>
+        </tr>
       </thead>
       <tbody>
-      <tr v-for="booking in myBookings" :key="booking.bookingId">
-        <td>{{ booking.bookingId }}</td>
-        <td>
+        <tr v-for="booking in myBookings" :key="booking.bookingId">
+          <td>{{ booking.bookingId }}</td>
+          <td>
             <span :class="{
-              'badge bg-warning text-dark': booking.status === 'RESERVED',
-              'badge bg-success': booking.status === 'CONFIRMED'
+              'badge bg-warning text-dark': booking.bookingStatus === 'RESERVED',
+              'badge bg-success': booking.bookingStatus === 'CONFIRMED'
             }">
-              {{ booking.status }}
+              {{ booking.bookingStatus }}
             </span>
-        </td>
-        <td>{{ booking.stationName }}</td>
-        <td>{{ booking.date }}</td>
-        <td>{{ booking.timeslot }}</td>
-        <td>{{ booking.price }} €</td>
-        <td>
-          <button v-if="booking.status === 'RESERVED'" class="btn btn-sm btn-primary"
-                  @click="openPaymentModal(booking)">
-            Pay
-          </button>
-        </td>
-      </tr>
+          </td>
+          <td>{{ booking.stationName }}</td>
+          <td>{{ booking.date }}</td>
+          <td>{{ booking.timeslot }}</td>
+          <td>{{ booking.price }} €</td>
+          <td>
+            <button v-if="booking.bookingStatus === 'RESERVED'" class="btn btn-sm btn-primary"
+              @click="openPaymentModal(booking)">
+              Pay
+            </button>
+          </td>
+        </tr>
       </tbody>
     </table>
 
     <!-- Bootstrap Toast Notification -->
     <div class="position-fixed top-0 end-0 p-3" style="z-index: 1100">
       <div ref="toastRef" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive"
-           aria-atomic="true">
+        aria-atomic="true">
         <div class="d-flex">
           <div class="toast-body">{{ toastMessage }}</div>
           <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
-                  @click="hideToast"></button>
+            @click="hideToast"></button>
         </div>
       </div>
     </div>
@@ -152,12 +153,14 @@ export default {
       try {
         data.forEach(loc => {
           if (loc.latitude && loc.longitude) {
-            L.marker([loc.latitude, loc.longitude], {icon: L.icon({
+            L.marker([loc.latitude, loc.longitude], {
+              icon: L.icon({
                 iconUrl: chargerIcon,
                 iconSize: [30, 30],
                 iconAnchor: [22, 94],
                 popupAnchor: [-3, -76],
-              })})
+              })
+            })
               .addTo(this.map)
               .bindPopup(`<b>${loc.city}, ${loc.street}</b>`);
           }
@@ -171,11 +174,14 @@ export default {
 </script>
 
 <script setup>
-import {ref, nextTick} from 'vue'
-import {Toast} from 'bootstrap'
+import { ref, nextTick, onMounted } from 'vue'
+import { Toast } from 'bootstrap'
 import bookingService from "@/service/BookingService.js";
+import paymentService from "@/service/PaymentService.js";
 
-const userId = 42
+const user = JSON.parse(localStorage.getItem('user'));
+const userId = user?.userId;
+
 
 const searchCode = ref('')
 const showModal = ref(false)
@@ -189,27 +195,7 @@ const toastInstance = ref(null)
 const toastMessage = ref('')
 const offers = ref([])
 
-// Fake data for development
-// const offers = ref([
-//   {
-//     offerId: 201,
-//     stationName: 'FastCharge A',
-//     powerOutput: '50kW',
-//     timeslot: '30 Minutes',
-//     availableDate: '2025-06-01',
-//     price: 8.5,
-//     address: {city: 'Addis', street: 'Main St', postalCode: '1000'}
-//   },
-//   {
-//     offerId: 202,
-//     stationName: 'EV Hub',
-//     powerOutput: '75kW',
-//     timeslot: '1 Hour',
-//     availableDate: '2025-06-02',
-//     price: 12.0,
-//     address: {city: 'Adama', street: 'Power Rd', postalCode: '1100'}
-//   }
-// ])
+
 
 const myBookings = ref([])
 
@@ -229,9 +215,9 @@ const submitBooking = async () => {
 
   // Update offer availability via API (currently commented for fake data)
   try {
-    // await offerSlotService.update(`${offer.offerId}`, {
+    //  await offerSlotService.UpdateOfferSlot(offer.offerId, {
     //   isAvailable: false
-    // })
+    // });
     // showToast('Offer availability updated!')
   } catch (error) {
     console.error('Failed to update offer:', error)
@@ -246,26 +232,66 @@ const submitBooking = async () => {
       bookingStatus: 'RESERVED'
     });
     showToast('Booking created via API!');
+    loadUserBookings(userId);
+
   } catch (error) {
     console.error('Failed to create booking:', error);
     showToast('Error creating booking');
   }
 
-  // Fake data booking action
-  myBookings.value.push({
-    bookingId: Date.now(),
-    offerId: offer.offerId,
-    userId: userId,
-    status: 'RESERVED',
-    stationName: offer.stationName,
-    timeslot: offer.timeSlot,
-    date: offer.availableDate,
-    price: offer.price
-  });
 
   closeModal();
   showToast('Booking successful!');
 }
+
+//loadbookings
+const loadUserBookings = async () => {
+  if (!userId) return;
+
+  try {
+    const response = await bookingService.getByUserId(userId);
+    const bookings = response.data;
+
+    const enrichedBookings = await Promise.all(
+      bookings.map(async (booking) => {
+        try {
+          const offerResponse = await offerSlotService.getOfferAndStationByOfferId(booking.offerId);
+          const offer = offerResponse.data;
+
+          const date = offer.availableDate?.split('T')[0] ?? 'N/A';
+
+          return {
+            bookingId: booking.bookingId,
+            offerId: booking.offerId,
+            userId: booking.userId,
+            bookingStatus: booking.bookingStatus,
+            stationName: offer.stationName,
+            timeslot: offer.timeSlot,
+            date: date,
+            price: offer.price
+          };
+        } catch (error) {
+          console.error(`Failed to load offer for booking ${booking.bookingId}:`, error);
+          return {
+            ...booking,
+            stationName: 'Unavailable',
+            timeslot: 'N/A',
+            date: 'N/A',
+            price: 0
+          };
+        }
+      })
+    );
+
+    myBookings.value = enrichedBookings;
+    showToast('Bookings loaded!');
+  } catch (error) {
+    console.error('Failed to load bookings:', error);
+    showToast('Error loading your bookings');
+  }
+};
+
+
 
 
 // Payment modal handlers
@@ -281,20 +307,44 @@ const closePaymentModal = () => {
   paymentMethod.value = ''
 }
 
-const submitPayment = () => {
+
+const submitPayment = async () => {
   if (!paymentMethod.value) {
-    showToast('Please select a payment method')
-    return
+    showToast('Please select a payment method');
+    return;
   }
 
-  const index = myBookings.value.findIndex(b => b.bookingId === paymentBooking.value.bookingId)
-  if (index !== -1) {
-    myBookings.value[index].status = 'CONFIRMED'
+  const booking = paymentBooking.value;
+  const index = myBookings.value.findIndex(b => b.bookingId === booking.bookingId);
+
+  if (index === -1) {
+    showToast('Booking not found');
+    return;
   }
 
-  showToast(`Payment successful via ${paymentMethod.value}!`)
-  closePaymentModal()
-}
+  const payment = {
+    bookingId: booking.bookingId,
+    bookingAmount: booking.price,
+    bookingDate: new Date().toISOString().split('T')[0], // e.g., "2025-06-19"
+    paymentMethod: paymentMethod.value
+  };
+
+  try {
+    await paymentService.createPayment(payment);
+    await bookingService.confirm(booking.bookingId); // Update booking status on backend
+
+    // Update local status after backend confirms
+    myBookings.value[index].status = 'CONFIRMED';
+
+    showToast(`Payment successful via ${paymentMethod.value}!`);
+    loadUserBookings(userId);
+  } catch (error) {
+    console.error('Failed to process payment or confirm booking:', error);
+    showToast('Error processing payment');
+  }
+
+  closePaymentModal();
+};
 
 // Toast handlers
 function showToast(message) {
@@ -329,7 +379,7 @@ const fetchOffers = async () => {
       // const end = new Date(start.getTime() + duration * 60000);
       // timeslot.value = `${start.toTimeString().substring(0, 5)} - ${end.toTimeString().substring(0, 5)}`;
 
-      const date = offer.availableDate.split('T')[0]; 
+      const date = offer.availableDate.split('T')[0];
 
       return {
         ...offer,
@@ -343,6 +393,11 @@ const fetchOffers = async () => {
     showToast('Failed to fetch offers');
   }
 }
+
+
+onMounted(() => {
+  loadUserBookings();
+});
 </script>
 
 <style scoped>
