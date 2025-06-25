@@ -17,6 +17,7 @@ import OwnerDashboard from '@/views/owner/OwnerDashboard.vue'
 import OwnerBookingsView from '@/views/owner/OwnerBookingsView.vue'
 import OwnerStationsView from '@/views/owner/OwnerStationsView.vue'
 import OfferSlotsView from '@/views/owner/OfferSlotsView.vue'
+import OwnerStatistics from '@/views/owner/OwnerStatistics.vue'
 
 
 const router = createRouter({
@@ -80,6 +81,11 @@ const router = createRouter({
           path: 'Offers',
           name: 'OfferSlots',
           component: OfferSlotsView
+        },
+        {
+          path: 'statistics',
+          name: 'OwnerStatistics',
+          component: OwnerStatistics
         }
       ]
     }
