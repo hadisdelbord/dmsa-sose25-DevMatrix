@@ -147,7 +147,7 @@ import { ref, onMounted } from 'vue'
 import StatisticsService from '@/service/StatisticsService'
 
 // DATA
-const ownerId = '123' // (for now, hardcoded)
+
 const bookings = ref([])
 const totalPrice = ref(0)
 const totalUsageKWh = ref(0)
@@ -170,7 +170,7 @@ const timeOptions = [
 // Fetch initial stats from backend
 const fetchStats = async () => {
   try {
-    const res = await StatisticsService.getAll(ownerId)
+    const res = await StatisticsService.getAll()
     bookings.value = res.data.bookings
     totalPrice.value = res.data.totalPrice
     totalUsageKWh.value = res.data.totalUsageKWh
@@ -192,7 +192,6 @@ const applyFilters = async () => {
 
   try {
     const res = await StatisticsService.filter({
-      ownerId,
       stationIds: stationsToSend,
       dateRange: selectedDateRange.value,
     })
