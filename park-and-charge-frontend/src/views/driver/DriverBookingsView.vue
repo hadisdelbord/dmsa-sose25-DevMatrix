@@ -215,9 +215,9 @@ const submitBooking = async () => {
 
   // Update offer availability via API (currently commented for fake data)
   try {
-    //  await offerSlotService.UpdateOfferSlot(offer.offerId, {
-    //   isAvailable: false
-    // });
+     await offerSlotService.UpdateOfferSlot(offer.offerId, {
+      isAvailable: false
+    });
     // showToast('Offer availability updated!')
   } catch (error) {
     console.error('Failed to update offer:', error)
@@ -232,7 +232,8 @@ const submitBooking = async () => {
       bookingStatus: 'RESERVED'
     });
     showToast('Booking created via API!');
-    loadUserBookings(userId);
+    loadUserBookings();
+    fetchOffers();
 
   } catch (error) {
     console.error('Failed to create booking:', error);
@@ -337,7 +338,7 @@ const submitPayment = async () => {
     myBookings.value[index].status = 'CONFIRMED';
 
     showToast(`Payment successful via ${paymentMethod.value}!`);
-    loadUserBookings(userId);
+    loadUserBookings();
   } catch (error) {
     console.error('Failed to process payment or confirm booking:', error);
     showToast('Error processing payment');
