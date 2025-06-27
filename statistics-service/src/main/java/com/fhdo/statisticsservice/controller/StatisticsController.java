@@ -5,7 +5,10 @@ import com.fhdo.statisticsservice.dto.BookingSummaryResponseDTO;
 import com.fhdo.statisticsservice.service.BookingClient;
 import com.fhdo.statisticsservice.service.StatisticsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -20,7 +23,9 @@ public class StatisticsController {
 
     // Called when user enters the statistics page
     @GetMapping("/bookings")
-    public BookingSummaryResponseDTO getAllBookings(@RequestParam String ownerId) {
+    public BookingSummaryResponseDTO getAllBookings() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String ownerId = authentication.getName();
         // Clear cache and fetch fresh data
         bookingClient.getBookingSummary(ownerId);
 
@@ -33,6 +38,9 @@ public class StatisticsController {
     // Called when user applies filters
     @PostMapping("/bookings/filter")
     public BookingSummaryResponseDTO getFilteredBookings(@RequestBody BookingFilterRequestDTO request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String ownerId = authentication.getName();
+        request.setOwnerId(ownerId);  // <--- THIS LINE IS IMPORTANT
         return statisticsService.getFilteredBookingSummary(request);
     }
 }

@@ -29,7 +29,8 @@ public class OfferSlotServiceImp implements OfferSlotService {
     @Autowired
     private ChargingStationRepository _chargingStationRepository;
 
-    public OfferSlotServiceImp(OfferSlotRepository offerSlotRepository, OfferSlotMapper offerSlotMapper, ChargingStationRepository chargingStationRepository){
+    public OfferSlotServiceImp(OfferSlotRepository offerSlotRepository, OfferSlotMapper offerSlotMapper,
+            ChargingStationRepository chargingStationRepository) {
         this._offerSlotRepository = offerSlotRepository;
         this._OfferSlotMapper = offerSlotMapper;
         this._chargingStationRepository = chargingStationRepository;
@@ -38,63 +39,63 @@ public class OfferSlotServiceImp implements OfferSlotService {
     @Override
     public List<OfferSlotDto> getAll() {
         List<OfferSlot> lstOfferSlots = StreamSupport
-        .stream(_offerSlotRepository.findAll().spliterator(), false)
-        .collect(Collectors.toList());
+                .stream(_offerSlotRepository.findAll().spliterator(), false)
+                .collect(Collectors.toList());
         return _OfferSlotMapper.toDtoList(lstOfferSlots);
     }
+
     @Override
     public Optional<OfferSlotDto> getById(Long id) {
-        return _offerSlotRepository.findById(id).map(_OfferSlotMapper :: toDto);
+        return _offerSlotRepository.findById(id).map(_OfferSlotMapper::toDto);
     }
 
     public void createAll(List<OfferSlotDto> dtos) {
-    List<OfferSlot> entities = dtos.stream().map(dto -> {
-        OfferSlot slot = new OfferSlot();
-        slot.setTimeSlot(dto.getTimeSlot());
-        slot.setPricePerSlot(dto.getPricePerSlot());
-        slot.setIsAvailable(dto.getIsAvailable());
-        slot.setSlotDate(dto.getSlotDate());
-
-        ChargingStation station = new ChargingStation();
-        station.setId(dto.getStationId());
-        slot.setChargingStation(station);
-
-        return slot;
-    }).collect(Collectors.toList());
-
-    _offerSlotRepository.saveAll(entities);
-    }
-
-    public void createOrUpdateAll(List<OfferSlotDto> dtos) {
-    for (OfferSlotDto dto : dtos) {
-        Optional<OfferSlot> existingSlotOpt = _offerSlotRepository
-            .findByChargingStationIdAndSlotDateAndTimeSlot(
-                dto.getStationId(),
-                dto.getSlotDate(),
-                dto.getTimeSlot()
-            );
-
-        if (existingSlotOpt.isPresent()) {
-            OfferSlot existingSlot = existingSlotOpt.get();
-            existingSlot.setPricePerSlot(dto.getPricePerSlot());
-            existingSlot.setIsAvailable(dto.getIsAvailable());
-            _offerSlotRepository.save(existingSlot);
-        } else {
+        List<OfferSlot> entities = dtos.stream().map(dto -> {
             OfferSlot slot = new OfferSlot();
             slot.setTimeSlot(dto.getTimeSlot());
             slot.setPricePerSlot(dto.getPricePerSlot());
             slot.setIsAvailable(dto.getIsAvailable());
             slot.setSlotDate(dto.getSlotDate());
-            slot.setSlotDuration(dto.getSlotDuration());
 
             ChargingStation station = new ChargingStation();
             station.setId(dto.getStationId());
             slot.setChargingStation(station);
 
-            _offerSlotRepository.save(slot);
+            return slot;
+        }).collect(Collectors.toList());
+
+        _offerSlotRepository.saveAll(entities);
+    }
+
+    public void createOrUpdateAll(List<OfferSlotDto> dtos) {
+        for (OfferSlotDto dto : dtos) {
+            Optional<OfferSlot> existingSlotOpt = _offerSlotRepository
+                    .findByChargingStationIdAndSlotDateAndTimeSlot(
+                            dto.getStationId(),
+                            dto.getSlotDate(),
+                            dto.getTimeSlot());
+
+            if (existingSlotOpt.isPresent()) {
+                OfferSlot existingSlot = existingSlotOpt.get();
+                existingSlot.setPricePerSlot(dto.getPricePerSlot());
+                existingSlot.setIsAvailable(dto.getIsAvailable());
+                _offerSlotRepository.save(existingSlot);
+            } else {
+                OfferSlot slot = new OfferSlot();
+                slot.setTimeSlot(dto.getTimeSlot());
+                slot.setPricePerSlot(dto.getPricePerSlot());
+                slot.setIsAvailable(dto.getIsAvailable());
+                slot.setSlotDate(dto.getSlotDate());
+                slot.setSlotDuration(dto.getSlotDuration());
+
+                ChargingStation station = new ChargingStation();
+                station.setId(dto.getStationId());
+                slot.setChargingStation(station);
+
+                _offerSlotRepository.save(slot);
+            }
         }
     }
-}
 
  @Override
     public OfferSlotDto update(Long id, OfferSlotDto dto) {
@@ -125,34 +126,34 @@ public class OfferSlotServiceImp implements OfferSlotService {
         }
         return null;
     }
-    
     @Override
     public boolean delete(Long id) {
-        if(_offerSlotRepository.existsById(id)){
+        if (_offerSlotRepository.existsById(id)) {
             _offerSlotRepository.deleteById(id);
             return true;
         }
         return false;
     }
 
-    public List<AvailableSlotDto> GetAvailableOffers(String postalCode){
+    public List<AvailableSlotDto> GetAvailableOffers(String postalCode) {
         var availableOffer = _offerSlotRepository.GetAvailableOffers(postalCode);
         var offerslotDto = _OfferSlotMapper.toDtoListWithAddress(availableOffer);
         return offerslotDto;
     }
 
-     public Optional<OfferAndStationDto> GetOfferWithStationById(long offerId){
-        var offerslotDto = _offerSlotRepository.findById(offerId).map(_OfferSlotMapper :: toDtoWithStation);;
+    public Optional<OfferAndStationDto> GetOfferWithStationById(long offerId) {
+        var offerslotDto = _offerSlotRepository.GetOfferSlotsWithStationById(offerId)
+                .map(_OfferSlotMapper::toDtoWithStation);
+        ;
         return offerslotDto;
     }
-    
+
     public List<OfferSlotDto> GetByStationIdAndDate(Long stationId, LocalDate date) {
-        LocalDateTime startOfDay = date.atStartOfDay(); 
+        LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atTime(LocalTime.MAX);
-            List<OfferSlot> slots = _offerSlotRepository.findByChargingStationIdAndSlotDateBetween(
-        stationId,startOfDay, endOfDay
-    );
-            return slots.stream()
+        List<OfferSlot> slots = _offerSlotRepository.findByChargingStationIdAndSlotDateBetween(
+                stationId, startOfDay, endOfDay);
+        return slots.stream()
                 .map(_OfferSlotMapper::toDto)
                 .collect(Collectors.toList());
     }
