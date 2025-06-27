@@ -96,22 +96,36 @@ public class OfferSlotServiceImp implements OfferSlotService {
     }
 }
 
-    @Override
+ @Override
     public OfferSlotDto update(Long id, OfferSlotDto dto) {
-        var offerSlot = _offerSlotRepository.findById(id).get();
-        if(offerSlot != null){
-            OfferSlot offer = _OfferSlotMapper.toEntity(dto);
-            offerSlot.setTimeSlot(offer.getTimeSlot());
-            offerSlot.setPricePerSlot(offer.getPricePerSlot());
-            offerSlot.setIsAvailable(offer.getIsAvailable());
-            offerSlot.setSlotDate(offer.getSlotDate());
+        var offerSlotOpt = _offerSlotRepository.findById(id);
+        if (offerSlotOpt.isPresent()) {
+            OfferSlot offerSlot = offerSlotOpt.get();
+
+            // Only update if dto has non-null values
+            if (dto.getIsAvailable() != null) {
+                offerSlot.setIsAvailable(dto.getIsAvailable());
+            }
+
+            // Uncomment if you want to allow updating these fields explicitly
+            if (dto.getTimeSlot() != null) {
+                offerSlot.setTimeSlot(dto.getTimeSlot());
+            }
+            if (dto.getPricePerSlot() != null) {
+                offerSlot.setPricePerSlot(dto.getPricePerSlot());
+            }
+            if (dto.getSlotDate() != null) {
+                offerSlot.setSlotDate(dto.getSlotDate());
+            }
+
             OfferSlot savedOffer = _offerSlotRepository.save(offerSlot);
-            var offerslotDto = _OfferSlotMapper.toDto(savedOffer);
-            offerslotDto.setStationId(dto.getStationId());
+            OfferSlotDto offerslotDto = _OfferSlotMapper.toDto(savedOffer);
+            offerslotDto.setStationId(dto.getStationId()); // if needed
             return offerslotDto;
         }
         return null;
     }
+    
     @Override
     public boolean delete(Long id) {
         if(_offerSlotRepository.existsById(id)){

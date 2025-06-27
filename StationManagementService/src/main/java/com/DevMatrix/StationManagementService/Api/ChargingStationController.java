@@ -92,4 +92,11 @@ public class ChargingStationController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("GetByUserId")
+    public ResponseEntity<List<ChargingStationDto>> GetStationsByUserId(@RequestParam Long userId) {
+        List<ChargingStationDto> lststations = _chargingStationService.GetStationsByUserId(userId);
+        return ResponseEntity.ok(lststations);
+    }
+    
 }

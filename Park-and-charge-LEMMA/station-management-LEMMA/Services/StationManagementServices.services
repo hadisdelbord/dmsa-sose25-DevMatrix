@@ -1,0 +1,213 @@
+import technology from "../technology/StationManagement.technology" as java
+import datatypes from "../domain/station-management-domain.data" as banking
+
+@technology(java)
+@sync(java::_protocols.rest)
+@endpoints(
+    java::_protocols.rest: "/api", "/station-management";
+)
+architecture functional microservice com.DevMatrix.StationManagementService {
+    
+    // Address Management Interface
+     @endpoints(java::_protocols.rest: "/Addresses";)
+    interface AddressManagement {
+        
+         ---
+        Create an address.
+        @required state State of the address.
+        @required city City of the address.
+        @required street Street of the address.
+        @required postalCode Postal code of the address.
+        ---
+        createAddress(
+            sync in state : string,
+            sync in city : string,
+            sync in street : string,
+            sync in postalCode : string,
+            sync out createdAddress : station::v1.StationManagement.Address
+        );
+        
+        ---
+        Update an address location.
+        @required isEdit Whether this is an edit operation.
+        @param id Address ID for editing.
+        @required addressData The address information.
+        ---
+        updateLocation(
+            sync in isEdit : boolean,
+            sync in id? : long,
+            sync in addressData : station::v1.StationManagement.Address,
+            sync out updatedAddress : station::v1.StationManagement.Address
+        );
+        
+        ---
+        Retrieve address information.
+        @required addressId The ID of the address.
+        ---
+        @endpoints(java::_protocols.rest: "/{addressId}";)
+        getData(
+            sync in addressId : long,
+            sync out address : station::v1.StationManagement.Address
+        );
+        
+        ---
+        Retrieve all addresses.
+        ---
+        getAll(
+            sync out addresses : station::v1.StationManagement.Addresses
+        );
+        
+        
+         ---
+        Delete an address.
+        @required addressId ID of the address to delete.
+        ---
+        delete(
+            sync in addressId : long
+        );
+    }
+
+    
+    // Charging Station Management Interface
+     @endpoints(java::_protocols.rest: "/ChargingStations";)
+    interface ChargingStationManagement {
+        
+        ---
+        Get all charging stations for user.
+        @required authToken Authorization token.
+        ---
+        getAll(
+            sync in authToken : string,
+            sync out stations : station::v1.StationManagement.ChargingStations
+        );
+        
+                ---
+        Retrieve a charging station.
+        @required stationId The ID of the charging station.
+        ---
+        @endpoints(java::_protocols.rest: "/{stationId}";)
+        getStationById(
+            sync in stationId : long,
+            sync out chargingStation : station::v1.StationManagement.ChargingStation
+        );
+        
+        
+---
+        Create or update a charging station.
+        @required isEdit Whether this is an edit operation.
+        @param stationId Station ID for editing.
+        @required stationData The station information.
+        @required authToken Authorization token.
+        ---
+        updateChargingStation(
+            sync in isEdit : boolean,
+            sync in stationId? : long,
+            sync in stationData : station::v1.StationManagement.ChargingStation,
+            sync in authToken : string,
+            sync out updatedStation : station::v1.StationManagement.ChargingStation,
+            sync out fault errorCode : int
+        );
+        
+        ---
+        Update an existing station.
+        @required stationId ID of the station.
+        @required stationData The station information.
+        ---
+        updateStation(
+            sync in stationId : long,
+            sync in stationData : station::v1.StationManagement.ChargingStation,
+            sync out updatedStation : station::v1.StationManagement.ChargingStation
+        );
+    }
+    
+    // Offer Slot Management Interface
+     @endpoints(java::_protocols.rest: "/OfferSlots";)
+    interface OfferSlotManagement {
+        
+        ---
+        Get all offer slots.
+        ---
+        getAll(
+            sync out offerSlots : station::v1.StationManagement.OfferSlots
+        );
+        
+        ---
+        Retrieve an offer slot.
+        @required slotId The ID of the offer slot.
+        ---
+        @endpoints(java::_protocols.rest: "/{slotId}";)
+        getOfferById(
+            sync in slotId : long,
+            sync out offerSlot : station::v1.StationManagement.OfferSlot
+        );
+
+        ---
+        Get offers by station and date.
+        @required stationId The station ID.
+        @required slotDate The date for slots.
+        ---
+        @endpoints(java::_protocols.rest: "/station/{stationId}";)
+        getOffersByStationAndDate(
+            sync in stationId : long,
+            sync in slotDate : date,
+            sync out offerSlots : station::v1.StationManagement.OfferSlots
+        );
+        
+        ---
+        Create or update offer slots.
+        @required offerSlots The offer slots to create/update.
+        ---
+        createOrUpdate(
+            sync in offerSlots : station::v1.StationManagement.OfferSlots,
+            sync out result : string,
+            sync out fault errorCode : int
+        );
+        
+        ---
+        Update an offer slot.
+        @required slotId ID of the slot.
+        @required slotData The slot information.
+        ---
+        update(
+            sync in slotId : long,
+            sync in slotData : station::v1.StationManagement.OfferSlot,
+            sync out fault errorCode : int
+        );
+        
+
+         ---
+        Get available offers by postal code.
+        @required postalCode The postal code to search.
+        ---
+        @endpoints(java::_protocols.rest: "/available/{postalCode}";)
+        getAvailableOffer(
+            sync in postalCode : string,
+            sync out availableOffers : station::v1.StationManagement.OfferSlots
+        );
+        
+        ---
+        Get offer with station information.
+        @required offerId The offer ID.
+        ---
+        @endpoints(java::_protocols.rest: "/withStation/{offerId}";)
+        getOfferWithStationById(
+            sync in offerId : long,
+            sync out offerWithStation : station::v1.StationManagement.OfferSlot
+        );
+    }
+    
+    // Internal Service Dependencies
+    required microservices {
+        userService: UserService with RestTemplate::_protocols.http_client;
+    }
+    
+    
+    // Eureka Service Discovery Configuration
+    deployment technology Eureka::_deployment.EurekaClient {
+        service_name = "STATION-MANAGEMENT-SERVICE";
+        eureka_server_url = "http://eureka-server:8761/eureka";
+        port = 8081;
+    }
+}
+
+

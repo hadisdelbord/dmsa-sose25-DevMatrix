@@ -1,0 +1,94 @@
+context StationManagement {
+    
+    // Entity
+    // Table(name = "addresses")
+    structure Address<entity> {
+        // GeneratedValue
+        // Id
+        immutable long id<identifier>,
+        
+        // Column(name = "state")
+        string state,
+        
+        // Column(name = "city") 
+        string city,
+        
+        // Column(name = "street")
+        string street,
+        
+        // Embedded
+        PostalCode postalCode,
+        
+        // OneToMany(mappedBy = "address")
+        hide ChargingStation[] chargingStations
+    }
+    
+    // Embeddable
+    structure PostalCode<valueObject> {
+        // Column(name = "postal_code")
+        immutable string code,
+        
+        function boolean equals(PostalCode other),
+        function int hashCode()
+    }
+    
+    // Entity
+    // Table(name = "charging_stations")
+    structure ChargingStation<entity> {
+        // Id
+        // GeneratedValue(strategy = GenerationType.IDENTITY)
+        immutable long id<identifier>,
+        
+        // Column(name = "station_name")
+        string name,
+        
+        // Column(name = "user_id")
+        long userId,
+        
+        // Enumerated(EnumType.STRING)
+        // Column(name = "activity_status")
+        ActivityStatus activityStatus,
+        
+        // Column(name = "power_output")
+        float powerOutput,
+        
+        // ManyToOne(fetch = FetchType.EAGER)
+        // JoinColumn(name = "address_id")
+        Address address,
+        
+        // OneToMany(mappedBy = "chargingStation")
+        hide OfferSlot[] offerSlots
+    }
+    
+    // Entity
+    // Table(name = "offer_slots")
+    structure OfferSlot<entity> {
+        // Id
+        // GeneratedValue(strategy = GenerationType.IDENTITY)
+        immutable long id<identifier>,
+        
+        // Column(name = "time_slot")
+        string timeSlot,
+        
+        // Column(name = "price_per_slot")
+        float pricePerSlot,
+        
+        // Column(name = "is_available")
+        boolean isAvailable,
+        
+        // Column(name = "slot_date")
+        datetime slotDate,
+        
+        // Column(name = "slot_duration")
+        int slotDuration,
+        
+        // ManyToOne
+        // JoinColumn(name = "station_id")
+        ChargingStation chargingStation
+    }
+    
+    enum ActivityStatus {
+        ACTIVE("ACTIVE"),
+        INACTIVE("Inactive")
+    }
+}

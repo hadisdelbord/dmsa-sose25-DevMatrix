@@ -1,0 +1,39 @@
+import technology from "../technology/java.technology" as java
+
+@technology(java)
+@sync(java::_protocols.rest)
+@endpoints(
+    java::_protocols.rest: "/users";
+)
+architecture functional microservice com.DevMatrix.UserService {
+    
+    // Interface for User-related concerns
+    @endpoints(java::_protocols.rest: "/users";)
+    interface UserManagement {
+        ---
+        Get user information by email.
+        @required email User email address.
+        ---
+        @endpoints(java::_protocols.rest: "/GetUserInfo";)
+        getUserInfo(
+            sync in email : string,
+            sync out user : UserInfo
+        );
+    }
+    
+    // Eureka Service Discovery Configuration
+    deployment technology Eureka::_deployment.EurekaClient {
+        service_name = "USER-SERVICE";
+        eureka_server_url = "http://eureka-server:8761/eureka";
+        port = 8082;
+    }
+}
+
+// UserResponse structure for external service communication
+structure UserInfo {
+    long userId,
+    string name,
+    string email,
+    string passwordHash,
+    string role
+}

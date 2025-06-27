@@ -1,0 +1,73 @@
+technology StationManagement {
+    types {
+        primitive type Boolean based on boolean default;
+        primitive type Float based on float default;
+        primitive type Integer based on int default;
+        primitive type Long based on long default;
+        primitive type String based on string default;
+        primitive type DateTime based on datetime default;
+        primitive type Date based on date default;
+    }
+    
+    protocols {
+        sync rest data formats json default with format json;
+        sync http data formats json default with format json;
+        sync jwt data formats json default with format json;
+    }
+    
+    service aspects {
+        aspect RestController<singleval>;
+        aspect Service<singleval>;
+        aspect Repository<singleval>;
+        aspect Component<singleval>;
+        aspect Autowired<singleval>;
+        aspect RequestMapping<singleval>;
+        aspect GetMapping<singleval>;
+        aspect PostMapping<singleval>;
+        aspect PutMapping<singleval>;
+        aspect DeleteMapping<singleval>;
+        aspect PathVariable<singleval>;
+        aspect RequestParam<singleval>;
+        aspect RequestBody<singleval>;
+        aspect RequestHeader<singleval>;
+        
+
+        aspect Entity<singleval>;
+        aspect Id<singleval>;
+        aspect GeneratedValue<singleval>;
+        aspect ManyToOne<singleval>;
+        aspect OneToMany<singleval>;
+        aspect JoinColumn<singleval>;
+        aspect Embedded<singleval>;
+        aspect Embeddable<singleval>;
+        aspect Enumerated<singleval>;
+        
+
+        aspect Configuration<singleval>;
+        aspect EnableMethodSecurity<singleval>;
+        aspect PreAuthorize<singleval>;
+        aspect Bean<singleval>;
+    }
+    
+    deployment technologies {
+        docker {
+            operation environments = "openjdk" default;
+        };
+        
+        springBoot {
+            operation environments = "jar" default;
+        }
+    }
+    
+    infrastructure technologies {
+
+        serviceDiscovery {
+            operation environments = "eureka" default;
+        };
+        
+
+        jwtSecurity {
+            operation environments = "jwt-filter" default;
+        }
+    }
+}

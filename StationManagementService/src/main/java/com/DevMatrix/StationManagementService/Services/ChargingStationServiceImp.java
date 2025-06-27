@@ -61,6 +61,24 @@ public class ChargingStationServiceImp implements ChargingStationService {
     }
 
     @Override
+    public List<ChargingStationDto> GetStationsByUserId(Long userId) {
+        List<ChargingStation> stations = (List<ChargingStation>) _chargingStationRepository.findByUserId(userId);
+        var stationDtos = _chargingStationMapper.toDtoList(stations);
+        for (ChargingStationDto station : stationDtos) {
+            _addressRepository.findById(station.getAddressId()).ifPresent(address -> {
+            AddressDto addressDto = new AddressDto();
+            addressDto.setId(address.getId());
+            addressDto.setState(address.getState());
+            addressDto.setCity(address.getCity());
+            addressDto.setStreet(address.getStreet());
+            addressDto.setPostalCode(address.getPostalCode());
+            station.setAddress(addressDto);
+        });
+    }
+            return stationDtos;
+    }
+
+    @Override
     public ChargingStationDto getStationById(Long id) {
         var station =  _chargingStationRepository.findById(id);
         var stationDto = _chargingStationMapper.toDto(station.get());
