@@ -44,6 +44,12 @@ public class ChargingStationController {
         List<ChargingStationDto> lstAddress = _chargingStationService.getAllStations(email);
         return ResponseEntity.ok(lstAddress);
     }
+    //get All Stations For Map
+    @GetMapping("getAllStationsForMap")
+    public ResponseEntity<List<ChargingStationDto>> getStationsForMap(HttpServletRequest request) {
+        List<ChargingStationDto> Stations = _chargingStationService.getStationsForMap();
+        return ResponseEntity.ok(Stations);
+    }
 
     @GetMapping("GetStation/StationId/{id}")
     public ResponseEntity<ChargingStationDto> getById(@PathVariable Long id) {

@@ -36,7 +36,7 @@ public class ChargingStationServiceImp implements ChargingStationService {
     private final userClient _userClient;
     @Autowired
     private OfferSlotRepository _offerSlotRepository;
-     @Autowired
+    @Autowired
     private OfferSlotMapper _OfferSlotMapper;
 
     public ChargingStationServiceImp(ChargingStationRepository chargingStationRepository,
@@ -65,6 +65,25 @@ public class ChargingStationServiceImp implements ChargingStationService {
             });
         }
         return stationDtos;
+    }
+
+    // get stations for map
+    public List<ChargingStationDto> getStationsForMap() {
+        List<ChargingStation> stations = (List<ChargingStation>) _chargingStationRepository.findAll();
+        var stationDtos = _chargingStationMapper.toDtoList(stations);
+        for (ChargingStationDto station : stationDtos) {
+            _addressRepository.findById(station.getAddressId()).ifPresent(address -> {
+                AddressDto addressDto = new AddressDto();
+                addressDto.setId(address.getId());
+                addressDto.setState(address.getState());
+                addressDto.setCity(address.getCity());
+                addressDto.setStreet(address.getStreet());
+                addressDto.setPostalCode(address.getPostalCode());
+                station.setAddress(addressDto);
+            });
+        }
+        return stationDtos;
+
     }
 
     @Override
