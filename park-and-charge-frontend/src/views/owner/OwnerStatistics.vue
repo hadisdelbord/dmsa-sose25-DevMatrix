@@ -1,73 +1,49 @@
 <template>
   <div>
     <h2 class="mb-4">Owner Statistics</h2>
+
     <!-- Stats Circles -->
     <div class="d-flex justify-content-center gap-4 mb-4">
-      <!-- Total Bookings -->
       <div class="text-center" style="width: 120px;">
-        <div class="rounded-circle bg-warning bg-opacity-25 text-warning fw-bold d-flex align-items-center justify-content-center"
-            style="width: 100px; height: 100px; font-size: 1.3rem; margin: 0 auto;">
-          {{ bookings.length }}
+        <div
+          class="rounded-circle bg-warning bg-opacity-25 text-warning fw-bold d-flex align-items-center justify-content-center"
+          style="width: 100px; height: 100px; font-size: 1.3rem; margin: 0 auto;"
+        >
+          {{ filteredBookings.length }}
         </div>
         <div class="mt-2">Total Bookings</div>
       </div>
-      <!-- Total Price -->
       <div class="text-center" style="width: 120px;">
-        <div class="rounded-circle bg-primary bg-opacity-25 text-primary fw-bold d-flex align-items-center justify-content-center"
-            style="width: 100px; height: 100px; font-size: 1.3rem; margin: 0 auto;">
+        <div
+          class="rounded-circle bg-primary bg-opacity-25 text-primary fw-bold d-flex align-items-center justify-content-center"
+          style="width: 100px; height: 100px; font-size: 1.3rem; margin: 0 auto;"
+        >
           {{ totalPrice.toFixed(2) }} €
         </div>
         <div class="mt-2">Total Price</div>
       </div>
-      <!-- Total Usage -->
       <div class="text-center" style="width: 120px;">
-        <div class="rounded-circle bg-success bg-opacity-25 text-success fw-bold d-flex align-items-center justify-content-center"
-            style="width: 100px; height: 100px; font-size: 1.3rem; margin: 0 auto;">
-          {{ totalUsageKWh }} kWh
+        <div
+          class="rounded-circle bg-success bg-opacity-25 text-success fw-bold d-flex align-items-center justify-content-center"
+          style="width: 100px; height: 100px; font-size: 1.3rem; margin: 0 auto;"
+        >
+          {{ totalUsageKWh.toFixed(2) }} kWh
         </div>
         <div class="mt-2">Total Usage</div>
       </div>
-      <!-- Price per kWh -->
       <div class="text-center" style="width: 120px;">
-        <div class="rounded-circle bg-info bg-opacity-25 text-info fw-bold d-flex align-items-center justify-content-center"
-            style="width: 100px; height: 100px; font-size: 1.3rem; margin: 0 auto;">
-          {{ pricePerKWh.toFixed(2) }} €/kWh
+        <div
+          class="rounded-circle bg-info bg-opacity-25 text-info fw-bold d-flex align-items-center justify-content-center"
+          style="width: 100px; height: 100px; font-size: 1.3rem; margin: 0 auto;"
+        >
+          {{ avgPricePerKWh.toFixed(2) }} €/kWh
         </div>
         <div class="mt-2">Avg Price</div>
       </div>
     </div>
 
-    <!-- Filters Row -->
+    <!-- Filters -->
     <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between mb-4">
-      <!-- Stations Multi-checkbox -->
-      <!-- <div v-if="stationNames.length">
-        <label class="fw-semibold me-2">Stations:</label>
-        <div class="dropdown d-inline">
-          <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-            {{ selectedStations.length === 0 || selectedStations.length === stationNames.length ? 'All' : selectedStations.join(', ') }}
-          </button>
-          <div class="dropdown-menu p-2" style="min-width: 200px;">
-            <div>
-              <label>
-                <input
-                  type="checkbox"
-                  :checked="selectedStations.length === stationNames.length"
-                  @change="selectedStations = selectedStations.length === stationNames.length ? [] : stationNames.slice()"
-                /> All
-              </label>
-            </div>
-            <div v-for="station in stationNames" :key="station">
-              <label>
-                <input
-                  type="checkbox"
-                  :value="station"
-                  v-model="selectedStations"
-                /> {{ station }}
-              </label>
-            </div>
-          </div>
-        </div>
-      </div> -->
       <div v-if="stationNames.length">
         <label class="fw-semibold me-2">Stations:</label>
         <div>
@@ -75,7 +51,7 @@
             <input
               type="checkbox"
               :checked="selectedStations.length === stationNames.length"
-              @change="selectedStations = selectedStations.length === stationNames.length ? [] : stationNames.slice()"
+              @change="toggleAllStations"
             /> All
           </label>
           <div v-for="station in stationNames" :key="station">
@@ -85,78 +61,78 @@
           </div>
         </div>
       </div>
-      <!-- Time Dropdown -->
+
       <div>
         <label class="fw-semibold me-2">Time:</label>
         <select class="form-select d-inline-block w-auto" v-model="selectedDateRange">
-          <option v-for="opt in timeOptions" :value="opt.value" :key="opt.value">
-            {{ opt.label }}
-          </option>
+          <option v-for="opt in timeOptions" :value="opt.value" :key="opt.value">{{ opt.label }}</option>
         </select>
       </div>
 
-      <!-- Apply/Reset -->
       <div>
         <button class="btn btn-primary me-2" @click="applyFilters">Apply</button>
         <button class="btn btn-outline-secondary" @click="resetFilters">Reset Filters</button>
       </div>
     </div>
-    <!-- Bookings Table -->
+
+    <!-- Booking table -->
     <table class="table table-bordered table-hover mt-4">
       <thead class="table-light">
         <tr>
           <th>Station</th>
-          <th>Customer</th>
-          <th>Date/Time</th>
+          <th>Date</th>
           <th>Status</th>
+          <th>Price (€)</th>
           <th>Usage (kWh)</th>
-          <th>Total Price (€)</th>
           <th>Price per kWh (€)</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="b in bookings" :key="b.stationId + b.customerName + b.dateTime">
-          <td>{{ b.stationId }}</td>
-          <td>{{ b.customerName }}</td>
-          <td>{{ b.dateTime }}</td>
+        <tr v-for="b in filteredBookings" :key="b.bookingId">
+          <td>{{ b.station }}</td>
+          <td>{{ b.slotDate }}</td>
           <td>
             <span
               class="badge"
               :class="{
-                'bg-secondary': b.status === 'COMPLETED',
-                'bg-success': b.status === 'CONFIRMED',
                 'bg-warning': b.status === 'RESERVED',
-                'bg-danger': b.status === 'CANCELED'
+                'bg-success': b.status === 'CONFIRMED',
+                'bg-secondary': b.status === 'COMPLETED',
+                'bg-danger': b.status === 'CANCELED',
               }"
-            >{{ b.status }}</span>
+            >
+              {{ b.status }}
+            </span>
           </td>
-          <td>{{ b.usageKWh }}</td>
-          <td>{{ b.totalPrice.toFixed(2) }}</td>
+          <td>{{ b.price.toFixed(2) }}</td>
+          <td>{{ b.usageKWh.toFixed(2) }}</td>
           <td>{{ b.pricePerKWh.toFixed(2) }}</td>
         </tr>
-        <tr v-if="!bookings.length">
-          <td colspan="7" class="text-center text-muted">No bookings found for the selected filter.</td>
+        <tr v-if="filteredBookings.length === 0">
+          <td colspan="6" class="text-center text-muted">No bookings found for the selected filter.</td>
         </tr>
       </tbody>
-    </table> 
+    </table>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import StatisticsService from '@/service/StatisticsService'
+import { ref, computed, onMounted } from 'vue'
+import stationService from '@/service/StationManagementService.js'
+import bookingService from '@/service/BookingService.js'
+import offerSlotService from '@/service/OfferSlotService.js'
 
-// DATA
+const user = JSON.parse(localStorage.getItem('user'))
+const ownerId = user?.userId || null
 
+// Raw bookings array
 const bookings = ref([])
-const totalPrice = ref(0)
-const totalUsageKWh = ref(0)
-const pricePerKWh = ref(0)
-const stationNames = ref([])
 
-// FILTER STATE
-const selectedStations = ref([])      // Stations selected by user
-const selectedDateRange = ref('all')  // Selected time filter
+// Filters
+const stationNames = ref([])
+const selectedStations = ref([])
+const selectedDateRange = ref('all')
+
 const timeOptions = [
   { value: 'all', label: 'All Time' },
   { value: 'last_year', label: 'Last Year' },
@@ -167,51 +143,128 @@ const timeOptions = [
   { value: 'last_day', label: 'Last Day' },
 ]
 
-// Fetch initial stats from backend
-const fetchStats = async () => {
+// Fetch all bookings for stations owned by user
+const fetchBookings = async () => {
+  if (!ownerId) {
+    bookings.value = []
+    stationNames.value = []
+    return
+  }
+
   try {
-    const res = await StatisticsService.getAll()
-    bookings.value = res.data.bookings
-    totalPrice.value = res.data.totalPrice
-    totalUsageKWh.value = res.data.totalUsageKWh
-    pricePerKWh.value = res.data.pricePerKWh
-    stationNames.value = res.data.stationNames
-    console.log('Fetched stations:', stationNames.value)
+    const stationsRes = await stationService.getStationsByOwnerId(ownerId)
+    const stations = stationsRes.data
+
+    stationNames.value = stations.map(s => s.name)
+    selectedStations.value = [...stationNames.value]
+
+    const allBookings = []
+
+    for (const station of stations) {
+      const offerIds = station.offerSlots?.map(slot => slot.id) || []
+      if (!offerIds.length) continue
+
+      const bookingsRes = await bookingService.getByOfferIds(offerIds)
+      const stationBookings = bookingsRes.data
+
+      for (const booking of stationBookings) {
+        const offer = station.offerSlots.find(o => o.id === booking.offerId)
+        if (!offer) continue
+
+        // Usage kWh is not part of your booking data; I'll simulate or pull from offer if available.
+        // Assuming offer has usageKWh field or else zero:
+        const usageKWh = offer.usageKWh || 0
+
+        // price per kWh = total price / usageKWh if usageKWh > 0 else 0
+        const pricePerKWh = usageKWh > 0 ? offer.pricePerSlot / usageKWh : 0
+
+        allBookings.push({
+          bookingId: booking.bookingId,
+          offerId: booking.offerId,
+          status: booking.bookingStatus,
+          station: station.name,
+          slotDate: offer.slotDate ? offer.slotDate.split('T')[0] : 'N/A',
+          timeSlot: offer.timeSlot || 'N/A',
+          price: offer.pricePerSlot || 0,
+          usageKWh,
+          pricePerKWh,
+        })
+      }
+    }
+
+    bookings.value = allBookings
   } catch (err) {
-    console.error('Failed to fetch stats:', err)
+    console.error('Error loading bookings for stats:', err)
   }
 }
 
-// Apply filters
-const applyFilters = async () => {
-  // If all or none are selected, send all stationNames
-  const stationsToSend =
-    selectedStations.value.length === 0 || selectedStations.value.length === stationNames.value.length
-      ? stationNames.value
-      : selectedStations.value
+// Filtering function for date range
+const filterByDateRange = (booking, range) => {
+  if (range === 'all') return true
 
-  try {
-    const res = await StatisticsService.filter({
-      stationIds: stationsToSend,
-      dateRange: selectedDateRange.value,
-    })
-    bookings.value = res.data.bookings
-    totalPrice.value = res.data.totalPrice
-    totalUsageKWh.value = res.data.totalUsageKWh
-    pricePerKWh.value = res.data.pricePerKWh
-    // Keep stationNames from initial fetch only
-  } catch (err) {
-    console.error('Failed to apply filters:', err)
+  const bookingDate = new Date(booking.slotDate)
+  const now = new Date()
+
+  switch (range) {
+    case 'last_year':
+      return bookingDate >= new Date(now.getFullYear() - 1, now.getMonth(), now.getDate())
+    case 'last_6_months':
+      return bookingDate >= new Date(now.getFullYear(), now.getMonth() - 6, now.getDate())
+    case 'last_3_months':
+      return bookingDate >= new Date(now.getFullYear(), now.getMonth() - 3, now.getDate())
+    case 'last_month':
+      return bookingDate >= new Date(now.getFullYear(), now.getMonth() - 1, now.getDate())
+    case 'last_week':
+      return bookingDate >= new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+    case 'last_day':
+      return bookingDate >= new Date(now.getTime() - 24 * 60 * 60 * 1000)
+    default:
+      return true
   }
 }
 
-// Reset filters to "All"
-const resetFilters = async () => {
-  selectedStations.value = []
+// Computed filtered bookings by station and date range
+const filteredBookings = computed(() => {
+  return bookings.value.filter(b => {
+    const inStation = selectedStations.value.includes(b.station)
+    const inDateRange = filterByDateRange(b, selectedDateRange.value)
+    return inStation && inDateRange
+  })
+})
+
+// Computed total price
+const totalPrice = computed(() => {
+  return filteredBookings.value.reduce((sum, b) => sum + b.price, 0)
+})
+
+// Computed total usage kWh
+const totalUsageKWh = computed(() => {
+  return filteredBookings.value.reduce((sum, b) => sum + b.usageKWh, 0)
+})
+
+// Computed avg price per kWh (avoid divide by zero)
+const avgPricePerKWh = computed(() => {
+  if (totalUsageKWh.value === 0) return 0
+  return totalPrice.value / totalUsageKWh.value
+})
+
+// Handlers
+const toggleAllStations = () => {
+  if (selectedStations.value.length === stationNames.value.length) {
+    selectedStations.value = []
+  } else {
+    selectedStations.value = [...stationNames.value]
+  }
+}
+
+const applyFilters = () => {
+  // Just triggers reactivity — computed properties automatically update
+}
+
+const resetFilters = () => {
+  selectedStations.value = [...stationNames.value]
   selectedDateRange.value = 'all'
-  await fetchStats()
 }
 
-onMounted(fetchStats)
+onMounted(fetchBookings)
 </script>
-

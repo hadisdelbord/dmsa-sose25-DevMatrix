@@ -13,14 +13,12 @@ import com.parkandcharge.booking_service.service.OfferClient;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @RestController
 @RequestMapping("/api/bookings")
@@ -157,11 +155,10 @@ public class BookingController {
         return ResponseEntity.ok(result);
     }
 
-    // testing
-    @GetMapping("/getAvailableOffers")
-    public List<OfferSlotDto> getOffers() {
-        return offerClient.getOffers();
+    // get Bookings by offer_id
+    @PostMapping("/by-offer-ids")
+    public List<Booking> getByOfferIds(@RequestBody List<Long> offerIds) {
+        return bookingService.getBookingsByOfferIds(offerIds);
     }
-    
 
 }

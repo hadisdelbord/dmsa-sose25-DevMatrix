@@ -8,6 +8,7 @@ import com.DevMatrix.StationManagementService.Dtos.ChargingStationDto;
 public interface ChargingStationService {
     List<ChargingStationDto> getAllStations(String email);
     List<ChargingStationDto> GetStationsByUserId(Long userId);
+    List<ChargingStationDto> getStationsForMap();
     ChargingStationDto getStationById(Long id);
     ChargingStationDto createStation(ChargingStationDto dto, String email);
     ChargingStationDto updateStation(Long id, ChargingStationDto dto);

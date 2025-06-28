@@ -33,5 +33,7 @@ public interface OfferSlotRepository extends CrudRepository<OfferSlot, Long> {
                 WHERE o.id = :offerId
             """)
     Optional<OfferSlot> GetOfferSlotsWithStationById(@Param("offerId") Long offerId);
+     //  NEW: get all offer slots by stationId
+    List<OfferSlot> findByChargingStationId(Long stationId);
 
 }

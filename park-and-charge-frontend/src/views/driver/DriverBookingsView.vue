@@ -14,20 +14,62 @@
     <!-- Offers Found -->
     <div v-if="offers.length">
       <h5>Available Offers</h5>
-      <div class="list-group mb-4">
-        <div class="list-group-item d-flex justify-content-between align-items-start flex-column"
-          v-for="offer in offers" :key="offer.offerId">
-          <div>
-            <strong>{{ offer.stationName }}</strong> ({{ offer.powerOutput }})<br />
-            Address: {{ offer.address.city }}, {{ offer.address.street }} ({{ offer.address.postalCode.value }})<br />
-            Timeslot: {{ offer.timeSlot }} | Date: {{ offer.availableDate }} | Price: {{ offer.price }} €
-          </div>
-          <div class="text-end mt-2">
-            <button class="btn btn-sm btn-primary" @click="confirmBooking(offer)">Book</button>
-          </div>
-        </div>
+
+      <!-- Filter by date -->
+      <div class="mb-3">
+        <label class="form-label">Filter by date:</label>
+        <input type="date" v-model="filterDate" class="form-control" style="max-width: 200px;">
       </div>
+
+      <table class="table mb-4">
+        <thead>
+          <tr>
+            <th>Station</th>
+            <th>Power Output</th>
+            <th>City</th>
+            <th>Street</th>
+            <th>Postal Code</th>
+            <th>Timeslot</th>
+            <th>Date</th>
+            <th>Price (€)</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="offer in paginatedOffers" :key="offer.offerId">
+            <td>{{ offer.stationName }}</td>
+            <td>{{ offer.powerOutput }}</td>
+            <td>{{ offer.address.city }}</td>
+            <td>{{ offer.address.street }}</td>
+            <td>{{ offer.address.postalCode.value }}</td>
+            <td>{{ offer.timeSlot }}</td>
+            <td>{{ offer.availableDate }}</td>
+            <td>{{ offer.price }}</td>
+            <td>
+              <button class="btn btn-sm btn-primary" @click="confirmBooking(offer)">Book</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination controls -->
+      <nav aria-label="Offers pagination">
+        <ul class="pagination">
+          <li class="page-item" :class="{ disabled: currentPage === 1 }">
+            <button class="page-link" @click="changePage(currentPage - 1)">Previous</button>
+          </li>
+          <li class="page-item disabled">
+            <span class="page-link">
+              Page {{ currentPage }} of {{ totalPages }}
+            </span>
+          </li>
+          <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+            <button class="page-link" @click="changePage(currentPage + 1)">Next</button>
+          </li>
+        </ul>
+      </nav>
     </div>
+
 
     <!-- Confirmation Modal -->
     <div v-if="showModal" class="modal-backdrop">
@@ -123,8 +165,7 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import chargerIcon from '@/assets/icons/charger-1.png';
-import mapService from "@/service/MapService.js";
-import offerSlotService from "@/service/OfferSlotService.js";
+import StationService from "@/service/StationManagementService.js";
 
 export default {
   name: 'LocationMap',
@@ -134,55 +175,143 @@ export default {
     };
   },
   async mounted() {
-    // Init Map
     this.initMap();
 
-    // Get All locations and show on map
-    const response = await mapService.getAllLocations();
-    this.loadLocations(response.data);
+    // postal code → lat/lng mapping (mock data)
+  const postalCodeCoords = {
+  "44135": { latitude: 51.5135, longitude: 7.4675 },
+  "44137": { latitude: 51.5110, longitude: 7.4650 },
+  "44139": { latitude: 51.5075, longitude: 7.4655 },
+  "44141": { latitude: 51.5090, longitude: 7.4700 },
+  "44143": { latitude: 51.5150, longitude: 7.4750 },
+  "44145": { latitude: 51.5210, longitude: 7.4720 },
+  "44147": { latitude: 51.5190, longitude: 7.4560 },
+  "44149": { latitude: 51.5095, longitude: 7.4360 },
+  "44225": { latitude: 51.4960, longitude: 7.4570 },
+  "44227": { latitude: 51.4920, longitude: 7.4720 },
+  "44229": { latitude: 51.4750, longitude: 7.4630 },
+  "44263": { latitude: 51.4900, longitude: 7.5000 },
+  "44265": { latitude: 51.4760, longitude: 7.5120 },
+  "44267": { latitude: 51.4660, longitude: 7.5250 },
+  "44269": { latitude: 51.4680, longitude: 7.5410 },
+  "44287": { latitude: 51.4965, longitude: 7.5530 },
+  "44289": { latitude: 51.4920, longitude: 7.5700 },
+  "44309": { latitude: 51.5290, longitude: 7.5450 },
+  "44319": { latitude: 51.5295, longitude: 7.5800 },
+  "44328": { latitude: 51.5500, longitude: 7.5500 },
+  "44329": { latitude: 51.5450, longitude: 7.5900 },
+  "44339": { latitude: 51.5430, longitude: 7.4800 },
+  "44357": { latitude: 51.5550, longitude: 7.4300 },
+  "44359": { latitude: 51.5650, longitude: 7.4200 },
+  "44369": { latitude: 51.5200, longitude: 7.4000 },
+  "44379": { latitude: 51.5150, longitude: 7.4400 },
+  "44388": { latitude: 51.5050, longitude: 7.3800 },
+  "44399": { latitude: 51.5300, longitude: 7.5300 },
+  // add more if you want...
+};
+
+
+    const fakeStations = [
+      {
+        name: 'Fake Station 1',
+        address: {
+          city: 'Dortmund',
+          street: 'Musterstraße 1'
+        },
+        latitude: 51.5136,
+        longitude: 7.4653
+      },
+      {
+        name: 'Fake Station 2',
+        address: {
+          city: 'Dortmund',
+          street: 'Beispielweg 5'
+        },
+        latitude: 51.5150,
+        longitude: 7.4670
+      }
+    ];
+
+    try {
+      const response = await StationService.getAllStationsForMap();
+
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        // enrich stations with lat/lng
+        const enrichedStations = response.data.map(station => {
+          const postalCode = station.address?.postalCode?.value;
+          const coords = postalCodeCoords[postalCode];
+          if (coords) {
+            return {
+              stationName: station.name,
+              city: station.address.city,
+              street: station.address.street,
+              latitude: coords.latitude,
+              longitude: coords.longitude
+            };
+          } else {
+            console.warn(`No coordinates found for postal code: ${postalCode}`);
+            return null;
+          }
+        }).filter(s => s !== null); // remove stations without coords
+
+        if (enrichedStations.length > 0) {
+          this.loadLocations(enrichedStations);
+        } else {
+          console.warn('All stations missing coords → using fake data');
+          this.loadLocations(fakeStations);
+        }
+      } else {
+        console.warn('StationService.GetAll() returned empty or invalid data → using fake data');
+        this.loadLocations(fakeStations);
+      }
+    } catch (error) {
+      console.error('Error fetching stations:', error);
+      this.loadLocations(fakeStations);
+    }
   },
   methods: {
     initMap() {
-      this.map = L.map('map').setView([51.5136, 7.4653], 13); // Default center: Dortmund
+      this.map = L.map('map').setView([51.5136, 7.4653], 13); // Dortmund center
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; OpenStreetMap contributors',
       }).addTo(this.map);
     },
-    loadLocations(data) {
-      try {
-        data.forEach(loc => {
-          if (loc.latitude && loc.longitude) {
-            L.marker([loc.latitude, loc.longitude], {
-              icon: L.icon({
-                iconUrl: chargerIcon,
-                iconSize: [30, 30],
-                iconAnchor: [22, 94],
-                popupAnchor: [-3, -76],
-              })
+    loadLocations(stations) {
+      stations.forEach(station => {
+        if (station.latitude && station.longitude) {
+          L.marker([station.latitude, station.longitude], {
+            icon: L.icon({
+              iconUrl: chargerIcon,
+              iconSize: [30, 30],
+              iconAnchor: [15, 30],
+              popupAnchor: [0, -30],
             })
-              .addTo(this.map)
-              .bindPopup(`<b>${loc.city}, ${loc.street}</b>`);
-          }
-        });
-      } catch (error) {
-        console.error("Error loading locations:", error);
-      }
+          })
+            .addTo(this.map)
+            .bindPopup(`
+            <b>${station.stationName || station.name || 'Unnamed Station'}</b><br/>
+            ${station.city || ''}, ${station.street || ''}
+          `);
+        }
+      });
     },
   },
 };
 </script>
 
 <script setup>
-import { ref, nextTick, onMounted } from 'vue'
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { Toast } from 'bootstrap'
 import bookingService from "@/service/BookingService.js";
 import paymentService from "@/service/PaymentService.js";
+import offerSlotService from "@/service/OfferSlotService.js";
 
+// User data
 const user = JSON.parse(localStorage.getItem('user'));
 const userId = user?.userId;
 
-
+// State variables
 const searchCode = ref('')
 const showModal = ref(false)
 const showPaymentModal = ref(false)
@@ -194,58 +323,85 @@ const toastRef = ref(null)
 const toastInstance = ref(null)
 const toastMessage = ref('')
 const offers = ref([])
-
-
-
 const myBookings = ref([])
 
+// Filter & pagination state
+const filterDate = ref('');
+const currentPage = ref(1);
+const itemsPerPage = ref(5);
 
+// Computed: filtered offers by date
+const filteredOffers = computed(() => {
+  if (!filterDate.value) return offers.value;
+  return offers.value.filter(offer => offer.availableDate === filterDate.value);
+});
+
+// Computed: paginated offers
+const paginatedOffers = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  return filteredOffers.value.slice(start, start + itemsPerPage.value);
+});
+
+// Total pages
+const totalPages = computed(() => {
+  return Math.ceil(filteredOffers.value.length / itemsPerPage.value) || 1;
+});
+
+// Change page helper
+const changePage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+  }
+}
+
+// Reset page to 1 when filter changes
+watch(filterDate, () => {
+  currentPage.value = 1;
+});
+
+// Confirm booking
 const confirmBooking = (offer) => {
   selectedOffer.value = offer
   showModal.value = true
 }
 
+// Close modal
 const closeModal = () => {
   showModal.value = false
   selectedOffer.value = null
 }
 
+// Submit booking
 const submitBooking = async () => {
   const offer = selectedOffer.value;
 
-  // Update offer availability via API (currently commented for fake data)
   try {
-     await offerSlotService.UpdateOfferSlot(offer.offerId, {
+    await offerSlotService.UpdateOfferSlot(offer.offerId, {
       isAvailable: false
     });
-    // showToast('Offer availability updated!')
   } catch (error) {
     console.error('Failed to update offer:', error)
     showToast('Error updating offer availability')
   }
 
-  // Call bookingService.create() to create a new booking
   try {
     await bookingService.create({
       offerId: offer.offerId,
       userId: userId,
       bookingStatus: 'RESERVED'
     });
-    showToast('Booking created via API!');
+    showToast('Booking created!');
     loadUserBookings();
     fetchOffers();
-
   } catch (error) {
     console.error('Failed to create booking:', error);
     showToast('Error creating booking');
   }
 
-
   closeModal();
-  showToast('Booking successful!');
 }
 
-//loadbookings
+// Load user bookings
 const loadUserBookings = async () => {
   if (!userId) return;
 
@@ -292,9 +448,6 @@ const loadUserBookings = async () => {
   }
 };
 
-
-
-
 // Payment modal handlers
 const openPaymentModal = (booking) => {
   paymentBooking.value = booking
@@ -308,7 +461,7 @@ const closePaymentModal = () => {
   paymentMethod.value = ''
 }
 
-
+// Submit payment
 const submitPayment = async () => {
   if (!paymentMethod.value) {
     showToast('Please select a payment method');
@@ -326,15 +479,14 @@ const submitPayment = async () => {
   const payment = {
     bookingId: booking.bookingId,
     bookingAmount: booking.price,
-    bookingDate: new Date().toISOString().split('T')[0], // e.g., "2025-06-19"
+    bookingDate: new Date().toISOString().split('T')[0],
     paymentMethod: paymentMethod.value
   };
 
   try {
     await paymentService.createPayment(payment);
-    await bookingService.confirm(booking.bookingId); // Update booking status on backend
+    await bookingService.confirm(booking.bookingId);
 
-    // Update local status after backend confirms
     myBookings.value[index].status = 'CONFIRMED';
 
     showToast(`Payment successful via ${paymentMethod.value}!`);
@@ -362,40 +514,31 @@ function hideToast() {
   if (toastInstance.value) toastInstance.value.hide()
 }
 
-// Prepared API Call (for fetching offers - commented)
+// Fetch offers
 const fetchOffers = async () => {
   try {
-    const response = await offerSlotService.getAvailableOffers(searchCode.value.trim());
+    const code = searchCode.value.trim();
+    if (!code) {
+      showToast('Please enter a postal code');
+      return;
+    }
+
+    const response = await offerSlotService.getAvailableOffers(code);
 
     offers.value = response.data.map(offer => {
       const formattedPowerOutput = `${offer.powerOutput} kW`;
-
-      // const startHour = Math.floor(offer.timeSlot);
-      // console.log(startHour);
-      // const startMinute = (offer.timeSlot % 1) * 60;
-      // console.log(startMinute);
-      // const duration =  offer.slotDuration;
-
-      // const start = new Date(0, 0, 0, startHour, startMinute);
-      // const end = new Date(start.getTime() + duration * 60000);
-      // timeslot.value = `${start.toTimeString().substring(0, 5)} - ${end.toTimeString().substring(0, 5)}`;
-
       const date = offer.availableDate.split('T')[0];
-
-      return {
-        ...offer,
-        powerOutput: formattedPowerOutput,
-        availableDate: date
-      };
+      return { ...offer, powerOutput: formattedPowerOutput, availableDate: date };
     });
-
   } catch (error) {
     console.error('Error fetching offers:', error);
     showToast('Failed to fetch offers');
   }
-}
+};
 
 
+
+// On mount
 onMounted(() => {
   loadUserBookings();
 });
