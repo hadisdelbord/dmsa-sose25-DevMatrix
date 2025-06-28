@@ -14,20 +14,62 @@
     <!-- Offers Found -->
     <div v-if="offers.length">
       <h5>Available Offers</h5>
-      <div class="list-group mb-4">
-        <div class="list-group-item d-flex justify-content-between align-items-start flex-column"
-          v-for="offer in offers" :key="offer.offerId">
-          <div>
-            <strong>{{ offer.stationName }}</strong> ({{ offer.powerOutput }})<br />
-            Address: {{ offer.address.city }}, {{ offer.address.street }} ({{ offer.address.postalCode.value }})<br />
-            Timeslot: {{ offer.timeSlot }} | Date: {{ offer.availableDate }} | Price: {{ offer.price }} €
-          </div>
-          <div class="text-end mt-2">
-            <button class="btn btn-sm btn-primary" @click="confirmBooking(offer)">Book</button>
-          </div>
-        </div>
+
+      <!-- Filter by date -->
+      <div class="mb-3">
+        <label class="form-label">Filter by date:</label>
+        <input type="date" v-model="filterDate" class="form-control" style="max-width: 200px;">
       </div>
+
+      <table class="table mb-4">
+        <thead>
+          <tr>
+            <th>Station</th>
+            <th>Power Output</th>
+            <th>City</th>
+            <th>Street</th>
+            <th>Postal Code</th>
+            <th>Timeslot</th>
+            <th>Date</th>
+            <th>Price (€)</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="offer in paginatedOffers" :key="offer.offerId">
+            <td>{{ offer.stationName }}</td>
+            <td>{{ offer.powerOutput }}</td>
+            <td>{{ offer.address.city }}</td>
+            <td>{{ offer.address.street }}</td>
+            <td>{{ offer.address.postalCode.value }}</td>
+            <td>{{ offer.timeSlot }}</td>
+            <td>{{ offer.availableDate }}</td>
+            <td>{{ offer.price }}</td>
+            <td>
+              <button class="btn btn-sm btn-primary" @click="confirmBooking(offer)">Book</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination controls -->
+      <nav aria-label="Offers pagination">
+        <ul class="pagination">
+          <li class="page-item" :class="{ disabled: currentPage === 1 }">
+            <button class="page-link" @click="changePage(currentPage - 1)">Previous</button>
+          </li>
+          <li class="page-item disabled">
+            <span class="page-link">
+              Page {{ currentPage }} of {{ totalPages }}
+            </span>
+          </li>
+          <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+            <button class="page-link" @click="changePage(currentPage + 1)">Next</button>
+          </li>
+        </ul>
+      </nav>
     </div>
+
 
     <!-- Confirmation Modal -->
     <div v-if="showModal" class="modal-backdrop">
@@ -124,7 +166,6 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import chargerIcon from '@/assets/icons/charger-1.png';
 import mapService from "@/service/MapService.js";
-import offerSlotService from "@/service/OfferSlotService.js";
 
 export default {
   name: 'LocationMap',
@@ -174,15 +215,17 @@ export default {
 </script>
 
 <script setup>
-import { ref, nextTick, onMounted } from 'vue'
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { Toast } from 'bootstrap'
 import bookingService from "@/service/BookingService.js";
 import paymentService from "@/service/PaymentService.js";
+import offerSlotService from "@/service/OfferSlotService.js";
 
+// User data
 const user = JSON.parse(localStorage.getItem('user'));
 const userId = user?.userId;
 
-
+// State variables
 const searchCode = ref('')
 const showModal = ref(false)
 const showPaymentModal = ref(false)
@@ -194,58 +237,85 @@ const toastRef = ref(null)
 const toastInstance = ref(null)
 const toastMessage = ref('')
 const offers = ref([])
-
-
-
 const myBookings = ref([])
 
+// Filter & pagination state
+const filterDate = ref('');
+const currentPage = ref(1);
+const itemsPerPage = ref(5);
 
+// Computed: filtered offers by date
+const filteredOffers = computed(() => {
+  if (!filterDate.value) return offers.value;
+  return offers.value.filter(offer => offer.availableDate === filterDate.value);
+});
+
+// Computed: paginated offers
+const paginatedOffers = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  return filteredOffers.value.slice(start, start + itemsPerPage.value);
+});
+
+// Total pages
+const totalPages = computed(() => {
+  return Math.ceil(filteredOffers.value.length / itemsPerPage.value) || 1;
+});
+
+// Change page helper
+const changePage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+  }
+}
+
+// Reset page to 1 when filter changes
+watch(filterDate, () => {
+  currentPage.value = 1;
+});
+
+// Confirm booking
 const confirmBooking = (offer) => {
   selectedOffer.value = offer
   showModal.value = true
 }
 
+// Close modal
 const closeModal = () => {
   showModal.value = false
   selectedOffer.value = null
 }
 
+// Submit booking
 const submitBooking = async () => {
   const offer = selectedOffer.value;
 
-  // Update offer availability via API (currently commented for fake data)
   try {
-     await offerSlotService.UpdateOfferSlot(offer.offerId, {
+    await offerSlotService.UpdateOfferSlot(offer.offerId, {
       isAvailable: false
     });
-    // showToast('Offer availability updated!')
   } catch (error) {
     console.error('Failed to update offer:', error)
     showToast('Error updating offer availability')
   }
 
-  // Call bookingService.create() to create a new booking
   try {
     await bookingService.create({
       offerId: offer.offerId,
       userId: userId,
       bookingStatus: 'RESERVED'
     });
-    showToast('Booking created via API!');
+    showToast('Booking created!');
     loadUserBookings();
     fetchOffers();
-
   } catch (error) {
     console.error('Failed to create booking:', error);
     showToast('Error creating booking');
   }
 
-
   closeModal();
-  showToast('Booking successful!');
 }
 
-//loadbookings
+// Load user bookings
 const loadUserBookings = async () => {
   if (!userId) return;
 
@@ -292,9 +362,6 @@ const loadUserBookings = async () => {
   }
 };
 
-
-
-
 // Payment modal handlers
 const openPaymentModal = (booking) => {
   paymentBooking.value = booking
@@ -308,7 +375,7 @@ const closePaymentModal = () => {
   paymentMethod.value = ''
 }
 
-
+// Submit payment
 const submitPayment = async () => {
   if (!paymentMethod.value) {
     showToast('Please select a payment method');
@@ -326,15 +393,14 @@ const submitPayment = async () => {
   const payment = {
     bookingId: booking.bookingId,
     bookingAmount: booking.price,
-    bookingDate: new Date().toISOString().split('T')[0], // e.g., "2025-06-19"
+    bookingDate: new Date().toISOString().split('T')[0],
     paymentMethod: paymentMethod.value
   };
 
   try {
     await paymentService.createPayment(payment);
-    await bookingService.confirm(booking.bookingId); // Update booking status on backend
+    await bookingService.confirm(booking.bookingId);
 
-    // Update local status after backend confirms
     myBookings.value[index].status = 'CONFIRMED';
 
     showToast(`Payment successful via ${paymentMethod.value}!`);
@@ -362,40 +428,31 @@ function hideToast() {
   if (toastInstance.value) toastInstance.value.hide()
 }
 
-// Prepared API Call (for fetching offers - commented)
+// Fetch offers
 const fetchOffers = async () => {
   try {
-    const response = await offerSlotService.getAvailableOffers(searchCode.value.trim());
+    const code = searchCode.value.trim();
+    if (!code) {
+      showToast('Please enter a postal code');
+      return;
+    }
+
+    const response = await offerSlotService.getAvailableOffers(code);
 
     offers.value = response.data.map(offer => {
       const formattedPowerOutput = `${offer.powerOutput} kW`;
-
-      // const startHour = Math.floor(offer.timeSlot);
-      // console.log(startHour);
-      // const startMinute = (offer.timeSlot % 1) * 60;
-      // console.log(startMinute);
-      // const duration =  offer.slotDuration;
-
-      // const start = new Date(0, 0, 0, startHour, startMinute);
-      // const end = new Date(start.getTime() + duration * 60000);
-      // timeslot.value = `${start.toTimeString().substring(0, 5)} - ${end.toTimeString().substring(0, 5)}`;
-
       const date = offer.availableDate.split('T')[0];
-
-      return {
-        ...offer,
-        powerOutput: formattedPowerOutput,
-        availableDate: date
-      };
+      return { ...offer, powerOutput: formattedPowerOutput, availableDate: date };
     });
-
   } catch (error) {
     console.error('Error fetching offers:', error);
     showToast('Failed to fetch offers');
   }
-}
+};
 
 
+
+// On mount
 onMounted(() => {
   loadUserBookings();
 });
