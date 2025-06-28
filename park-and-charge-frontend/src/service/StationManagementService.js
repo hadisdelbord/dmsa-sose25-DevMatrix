@@ -7,5 +7,10 @@ export default {
   updateStation(station, isEdit) {
     const id = isEdit ? station.id : 0;
     return api.post(`/UpdateStation/isEdit/${isEdit}?id=${id}`, station);
+  },
+  getStationsByOwnerId(userId) {
+    return api.get(`/GetByUserId`, {
+      params: { userId }
+    });
   }
 };

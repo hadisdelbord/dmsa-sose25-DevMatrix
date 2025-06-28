@@ -1,5 +1,6 @@
 package com.parkandcharge.booking_service.service;
 
+import com.parkandcharge.booking_service.dto.OfferSlotDto;
 import com.parkandcharge.booking_service.model.Booking;
 import com.parkandcharge.booking_service.model.BookingStatus;
 import com.parkandcharge.booking_service.repository.BookingRepository;
@@ -35,6 +36,13 @@ public class BookingService {
      */
     public Optional<Booking> getBookingById(Long id) {
         return bookingRepository.findById(id);
+    }
+
+    /**
+     * Retrieve a specific booking by offer_id.
+     */
+   public List<Booking> getBookingsByOfferIds(List<Long> offerIds) {
+        return bookingRepository.findByOfferIdIn(offerIds);
     }
 
     /**

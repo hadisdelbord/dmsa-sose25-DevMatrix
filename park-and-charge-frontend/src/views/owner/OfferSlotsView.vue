@@ -136,7 +136,7 @@ const generateTimeSlots = () => {
         slotDate: isoDateTime,
         chargingStationId: selectedStationId.value,
         selected: false,
-        pricePerSlot: 0,
+        pricePerSlot: 50,
         isAvailable: true
       });
     }

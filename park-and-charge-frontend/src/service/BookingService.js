@@ -27,5 +27,8 @@ export default {
   },
   getByUserId(userId) {
     return api.get(`/user/${userId}`);
-  }
+  },
+  getByOfferIds(offerIds) {
+    return api.post('/by-offer-ids', offerIds);
+  },
 };
