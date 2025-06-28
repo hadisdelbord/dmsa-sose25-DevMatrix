@@ -1,0 +1,27 @@
+import microservices from "../services/BookingService.services" as Services
+import technology from "../technology/common.technology" as java
+
+@technology(java)
+container BookingServiceContainer
+    deployment technology Docker::_deployment.Docker
+    deploys Services::com.DevMatrix.BookingService {
+        aspects {
+            Docker::_aspects.Dockerfile(
+                '
+                FROM openjdk:17-jre-slim
+                WORKDIR /app
+                COPY booking-service.jar .
+                EXPOSE 8083
+                ENV SPRING_PROFILES_ACTIVE=production
+                ENV SERVER_PORT=8083
+                ENV EUREKA_CLIENT_SERVICE_URL=http://eureka-server:8761/eureka
+                CMD java ${JAVA_OPTS} -jar booking-service.jar
+                '
+            );
+        }
+        default values {
+            basic endpoints {
+                Spring::_protocols.http: "http://localhost:8085";
+            }
+        }
+    }

@@ -1,4 +1,4 @@
-import technology from "../technology/java.technology" as java
+import technology from "../../technology/common.technology" as java
 
 @technology(java)
 @sync(java::_protocols.rest)

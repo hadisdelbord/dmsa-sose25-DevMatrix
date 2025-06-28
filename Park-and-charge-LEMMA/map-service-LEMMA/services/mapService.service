@@ -1,0 +1,71 @@
+import technology from "../../technology/common.technologyy" as java
+@technology(java)
+@sync(java::_protocols.rest)
+@endpoints(
+    java::_protocols.rest: "/api/v1", "/map"
+)
+architecture functional microservice com.DevMatrix.MapService {
+
+    @endpoints(java::_protocols.rest: "/locations";)
+    interface LocationManagement {
+
+        ---
+        Get all stored locations.
+        ---
+        getAllLocations(
+            sync out locations : map::v1.MapService.Locations
+        );
+
+        ---
+        Get all locations by zip code.
+        @required zipCode the zip code to filter
+        ---
+        @endpoints(java::_protocols.rest: "/zipcode/{zipCode}";)
+        getAllByZipCode(
+            sync in zipCode : int,
+            sync out locations : map::v1.MapService.Locations
+        );
+
+        ---
+        Create or retrieve location by station ID.
+        @required locationData data used to fetch location
+        ---
+        @endpoints(java::_protocols.rest: "/location/";)
+        createLocation(
+            sync in locationData : map::v1.MapService.LocationCreation,
+            sync out location : map::v1.MapService.Location
+        );
+
+        ---
+        Update location by station ID.
+        @required stationId the station identifier
+        @required locationData new location data
+        ---
+        @endpoints(java::_protocols.rest: "/location/station/{stationId}";)
+        updateLocation(
+            sync in stationId : long,
+            sync in locationData : map::v1.MapService.LocationCreation,
+            sync out location : map::v1.MapService.Location
+        );
+    }
+
+    @endpoints(java::_protocols.rest: "/location";)
+    interface LocationLookup {
+
+        ---
+        Get location data for a given query string (used in web).
+        @required query address string
+        ---
+        @endpoints(java::_protocols.rest: "/location/";)
+        getLocationFromQuery(
+            sync in query : string,
+            sync out geoData : map::v1.MapService.GeoResponse
+        );
+    }
+
+    deployment technology Eureka::_deployment.EurekaClient {
+        service_name = "MAP-SERVICE";
+        eureka_server_url = "http://eureka-server:8761/eureka";
+        port = 8080;
+    }
+}

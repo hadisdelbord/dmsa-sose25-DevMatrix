@@ -1,0 +1,12 @@
+structure Payment {
+    long id
+    float amount
+    string method
+    string status
+    string transactionId
+    dateTime paymentDate
+}
+
+collection Payments {
+    Payment[] payments
+}

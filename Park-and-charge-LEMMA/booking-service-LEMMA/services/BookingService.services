@@ -1,0 +1,61 @@
+import technology from "../../technology/common.technology" as java
+import datatypes from "../domain/booking-service-domain.data" as booking
+
+@technology(java)
+@sync(java::_protocols.rest)
+@endpoints(
+    java::_protocols.rest: "/api";
+)
+architecture functional microservice com.DevMatrix.BookingService {
+
+    @endpoints(java::_protocols.rest: "/Bookings";)
+    interface BookingManagement {
+
+        ---
+        Get all bookings for a driver.
+        @required driverId The ID of the driver.
+        ---
+        getBookingsByDriver(
+            sync in driverId : long,
+            sync out bookings : booking::v1.BookingService.Bookings
+        );
+
+        ---
+        Get a booking by its ID.
+        @required bookingId The ID of the booking.
+        ---
+        @endpoints(java::_protocols.rest: "/{bookingId}";)
+        getBookingById(
+            sync in bookingId : long,
+            sync out booking : booking::v1.BookingService.Booking
+        );
+
+        ---
+        Create a new booking.
+        @required bookingData The booking information.
+        ---
+        createBooking(
+            sync in bookingData : booking::v1.BookingService.Booking,
+            sync out createdBooking : booking::v1.BookingService.Booking
+        );
+
+        ---
+        Cancel an existing booking.
+        @required bookingId The ID of the booking.
+        ---
+        cancelBooking(
+            sync in bookingId : long,
+            sync out result : string
+        );
+    }
+
+    required microservices {
+        stationService: StationManagementService with RestTemplate::_protocols.http_client
+    }
+
+    deployment technology Eureka::_deployment.EurekaClient {
+        service_name = "BOOKING-SERVICE";
+        eureka_server_url = "http://eureka-server:8761/eureka";
+        port = 8085;
+    }
+}

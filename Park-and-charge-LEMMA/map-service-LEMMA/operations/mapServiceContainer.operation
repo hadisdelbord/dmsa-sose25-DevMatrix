@@ -1,0 +1,25 @@
+import microservices from "../services/MapService.services" as Services
+
+@technology(java)
+container MapServiceContainer deployment technology Docker::_deployment.Docker
+    deploys Services::com.DevMatrix.MapService {
+        aspects {
+            Docker::_aspects.Dockerfile(
+                '
+                FROM openjdk:17-jre-slim
+                WORKDIR /app
+                COPY map-service.jar .
+                EXPOSE 8084
+                ENV SPRING_PROFILES_ACTIVE=production
+                ENV SERVER_PORT=8084
+                ENV EUREKA_CLIENT_SERVICE_URL=http://eureka-server:8761/eureka
+                CMD java ${JAVA_OPTS} -jar map-service.jar
+                '
+            );
+        }
+        default values {
+            basic endpoints {
+                Spring::_protocols.http: "http://localhost:8080";
+            }
+        }
+    }

@@ -1,0 +1,76 @@
+import technology from "../../technology/common.technology" as java
+
+@technology(java)
+@sync(java::_protocols.rest)
+@endpoints(
+    java::_protocols.rest: "/api";
+)
+architecture functional microservice com.DevMatrix.UserService {
+
+    @endpoints(java::_protocols.rest: "/users";)
+    interface UserManagement {
+
+        ---
+        Register a new user.
+        @required name Name of the user.
+        @required email Email address.
+        @required password Password to encode.
+        @required role User role.
+        ---
+        @endpoints(java::_protocols.rest: "/register";)
+        registerUser(
+            sync in name : string,
+            sync in email : string,
+            sync in password : string,
+            sync in role : user::UserContext.UserRole,
+            sync out user : UserResponse
+        );
+
+        ---
+        Log in user with credentials.
+        @required email Email.
+        @required password Password.
+        ---
+        @endpoints(java::_protocols.rest: "/login";)
+        loginUser(
+            sync in email : string,
+            sync in password : string,
+            sync out loginResponse : LoginResponse,
+            sync out fault error : string
+        );
+
+        ---
+        Retrieve user info by email.
+        @required email Email to search.
+        ---
+        @endpoints(java::_protocols.rest: "/GetUserInfo";)
+        getUserByEmail(
+            sync in email : string,
+            sync out user : UserResponse
+        );
+    }
+
+    structure UserResponse {
+        long userId,
+        string name,
+        string email,
+        string role
+    }
+
+    structure LoginResponse {
+        long userId,
+        string name,
+        string email,
+        string role,
+        string token
+    }
+
+    
+    
+    // Eureka Service Discovery Configuration
+    deployment technology Eureka::_deployment.EurekaClient {
+        service_name = "USER-SERVICE";
+        eureka_server_url = "http://eureka-server:8761/eureka";
+        port = 8082;
+    }
+}

@@ -1,0 +1,16 @@
+context BookingService {
+
+    structure Booking<entity> {
+        immutable long id<identifier>,
+        long driverId,
+        long offerSlotId,
+        datetime bookingDate,
+        string bookingStatus
+    }
+
+    enum BookingStatus {
+        PENDING("PENDING"),
+        CONFIRMED("CONFIRMED"),
+        CANCELLED("CANCELLED")
+    }
+}

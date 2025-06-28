@@ -1,0 +1,18 @@
+import technology from "../../technology/common.technologyy" as java
+
+// Domain Layer
+context MapServiceDomain {
+    structure Coordinates<valueObject> {
+        float latitude,
+        float longitude
+    }
+
+    structure GeoRequest<valueObject> {
+        string address
+    }
+
+    structure GeoResponse<valueObject> {
+        string displayName,
+        Coordinates coordinates
+    }
+}
