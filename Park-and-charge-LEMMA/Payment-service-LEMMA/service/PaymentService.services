@@ -1,0 +1,67 @@
+import datatypes from "../domain/payment-service-domain.data" as payment
+import technology from "../../technology/common.technologyy" as java
+
+@technology(java)
+@sync(java::_protocols.rest)
+@endpoints(
+    java::_protocols.rest: "/api", "/payment"
+)
+architecture functional microservice com.ParkAndCharge.PaymentService {
+
+    @endpoints(java::_protocols.rest: "";)
+    interface PaymentManagement {
+
+        ---
+        Create a new payment.
+        @required payment payment data
+        ---
+        createPayment(
+            sync in payment : payment.Payment,
+            sync out savedPayment : payment.Payment
+        )
+
+        ---
+        Get all payments.
+        ---
+        getAllPayments(
+            sync out payments : payment.Payments
+        )
+
+        ---
+        Get payment by ID.
+        @required id ID of the payment
+        ---
+        @endpoints(java::_protocols.rest: "/{id}";)
+        getPaymentById(
+            sync in id : long,
+            sync out payment : payment.Payment
+        )
+
+        ---
+        Update payment by ID.
+        @required id ID of the payment
+        @required updatedPayment Updated payment data
+        ---
+        @endpoints(java::_protocols.rest: "/{id}";)
+        updatePayment(
+            sync in id : long,
+            sync in updatedPayment : payment.Payment,
+            sync out payment : payment.Payment
+        )
+
+        ---
+        Delete payment by ID.
+        @required id ID of the payment
+        ---
+        @endpoints(java::_protocols.rest: "/{id}";)
+        deletePayment(
+            sync in id : long
+        )
+    }
+
+    deployment technology Eureka::_deployment.EurekaClient {
+        service_name = "PAYMENT-SERVICE";
+        eureka_server_url = "http://eureka-server:8761/eureka";
+        port = 8085;
+    }
+}

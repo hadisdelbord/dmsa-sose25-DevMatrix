@@ -1,0 +1,29 @@
+context UserContext {
+
+    // Entity
+    // Table(name = "users")
+    structure User<entity> {
+        // Id
+        // GeneratedValue(strategy = GenerationType.IDENTITY)
+        immutable long userId<identifier>,
+
+        // NotNull
+        string name,
+
+        // Email
+        // NotNull
+        // Column(unique = true, nullable = false)
+        string email,
+
+        // NotNull
+        string passwordHash,
+
+        // Enumerated(EnumType.STRING)
+        UserRole role
+    }
+
+    enum UserRole {
+        DRIVER("DRIVER"),
+        OWNER("OWNER")
+    }
+}

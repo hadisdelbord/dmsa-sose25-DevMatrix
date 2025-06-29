@@ -1,4 +1,4 @@
-technology StationManagement {
+technology common {
     types {
         primitive type Boolean based on boolean default;
         primitive type Float based on float default;
@@ -8,13 +8,13 @@ technology StationManagement {
         primitive type DateTime based on datetime default;
         primitive type Date based on date default;
     }
-    
+
     protocols {
         sync rest data formats json default with format json;
         sync http data formats json default with format json;
         sync jwt data formats json default with format json;
     }
-    
+
     service aspects {
         aspect RestController<singleval>;
         aspect Service<singleval>;
@@ -30,7 +30,6 @@ technology StationManagement {
         aspect RequestParam<singleval>;
         aspect RequestBody<singleval>;
         aspect RequestHeader<singleval>;
-        
 
         aspect Entity<singleval>;
         aspect Id<singleval>;
@@ -41,33 +40,28 @@ technology StationManagement {
         aspect Embedded<singleval>;
         aspect Embeddable<singleval>;
         aspect Enumerated<singleval>;
-        
 
         aspect Configuration<singleval>;
         aspect EnableMethodSecurity<singleval>;
         aspect PreAuthorize<singleval>;
         aspect Bean<singleval>;
     }
-    
+
     deployment technologies {
         docker {
             operation environments = "openjdk" default;
         };
-        
         springBoot {
             operation environments = "jar" default;
-        }
+        };
     }
-    
-    infrastructure technologies {
 
+    infrastructure technologies {
         serviceDiscovery {
             operation environments = "eureka" default;
         };
-        
-
         jwtSecurity {
             operation environments = "jwt-filter" default;
-        }
+        };
     }
 }

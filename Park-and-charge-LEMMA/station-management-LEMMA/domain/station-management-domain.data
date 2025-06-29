@@ -20,7 +20,7 @@ context StationManagement {
         PostalCode postalCode,
         
         // OneToMany(mappedBy = "address")
-        hide ChargingStation[] chargingStations
+        list ChargingStation[] chargingStations
     }
     
     // Embeddable
@@ -57,7 +57,7 @@ context StationManagement {
         Address address,
         
         // OneToMany(mappedBy = "chargingStation")
-        hide OfferSlot[] offerSlots
+        list OfferSlot[] offerSlots
     }
     
     // Entity

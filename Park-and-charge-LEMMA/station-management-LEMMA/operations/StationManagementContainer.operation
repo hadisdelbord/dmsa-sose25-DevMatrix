@@ -1,5 +1,5 @@
 import microservices from "../services/StationManagementServices.services" as Services
-import technology from "../technology/StationManagement.technology" as java
+import technology from "../../technology/common.technologyy" as java
 
 @technology(java)
 container StationManagementContainer deployment technology Docker::_deployment.Docker
@@ -14,7 +14,6 @@ container StationManagementContainer deployment technology Docker::_deployment.D
                 ENV SPRING_PROFILES_ACTIVE=production
                 ENV SERVER_PORT=8081
                 ENV EUREKA_CLIENT_SERVICE_URL=http://eureka-server:8761/eureka
-                ENV USER_SERVICE_URL=http://USER-SERVICE
                 CMD java ${JAVA_OPTS} -jar station-management-service.jar
                 '
             );
@@ -26,56 +25,7 @@ container StationManagementContainer deployment technology Docker::_deployment.D
         }
     }
 
-/**
- * Container for the User Service
- */
-@technology(java)
-container UserServiceContainer deployment technology Docker::_deployment.Docker
-    deploys External::UserService {
-        aspects {
-            Docker::_aspects.Dockerfile(
-                '
-                FROM openjdk:17-jre-slim
-                WORKDIR /app
-                COPY user-service.jar .
-                EXPOSE 8080
-                ENV SPRING_PROFILES_ACTIVE=production
-                ENV SERVER_PORT=8080
-                ENV EUREKA_CLIENT_SERVICE_URL=http://eureka-server:8761/eureka
-                CMD java ${JAVA_OPTS} -jar user-service.jar
-                '
-            );
-        }
-        default values {
-            basic endpoints {
-                Spring::_protocols.http: "http://localhost:8080";
-            }
-        }
-    }
 
-/**
- * Infrastructure node for PostgreSQL Database
- */
-@technology(java)
-infrastructure_node DatabaseContainer deployment technology Docker::_deployment.Docker {
-    aspects {
-        Docker::_aspects.Dockerfile(
-            '
-            FROM postgres:15-alpine
-            ENV POSTGRES_DB=station_management
-            ENV POSTGRES_USER=station_user
-            ENV POSTGRES_PASSWORD=secure_password
-            EXPOSE 5432
-            VOLUME ["/var/lib/postgresql/data"]
-            '
-        );
-    }
-    default values {
-        basic endpoints {
-            Database::_deployment.PostgreSQL: "postgresql://localhost:5432/station_management";
-        }
-    }
-}
 
 /**
  * Infrastructure node for Eureka Service Discovery
@@ -101,25 +51,3 @@ infrastructure_node EurekaContainer deployment technology Docker::_deployment.Do
     }
 }
 
-/**
- * Complete microservice system deployment
- */
-@technology(java)
-deployment_node MicroserviceSystem {
-    
-    // Application Containers
-    container StationManagementContainer,
-    container UserServiceContainer,
-    
-    // Infrastructure Containers
-    infrastructure_node DatabaseContainer,
-    infrastructure_node EurekaContainer,
-    
-    // Dependencies
-    dependencies {
-        StationManagementContainer requires DatabaseContainer,
-        StationManagementContainer requires EurekaContainer,
-        StationManagementContainer requires UserServiceContainer,
-        UserServiceContainer requires EurekaContainer
-    }
-}

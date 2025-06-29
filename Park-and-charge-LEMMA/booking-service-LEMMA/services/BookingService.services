@@ -49,9 +49,9 @@ architecture functional microservice com.DevMatrix.BookingService {
         );
     }
 
-    required microservices {
-        stationService: StationManagementService with RestTemplate::_protocols.http_client
-    }
+required microservices {
+    stationService: ExternalStationManagement with RestTemplate::_protocols.http_client;
+}
 
     deployment technology Eureka::_deployment.EurekaClient {
         service_name = "BOOKING-SERVICE";

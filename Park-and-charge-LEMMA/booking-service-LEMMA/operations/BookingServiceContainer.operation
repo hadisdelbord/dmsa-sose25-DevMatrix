@@ -1,5 +1,5 @@
 import microservices from "../services/BookingService.services" as Services
-import technology from "../technology/common.technology" as java
+import technology from "../../technology/common.technology" as java
 
 @technology(java)
 container BookingServiceContainer
@@ -25,3 +25,26 @@ container BookingServiceContainer
             }
         }
     }
+    /**
+ * Infrastructure node for Eureka Service Discovery
+ */
+@technology(java)
+infrastructure_node EurekaContainer deployment technology Docker::_deployment.Docker {
+    aspects {
+        Docker::_aspects.Dockerfile(
+            '
+            FROM openjdk:17-jre-slim
+            WORKDIR /app
+            COPY eureka-server.jar .
+            EXPOSE 8761
+            ENV SPRING_PROFILES_ACTIVE=production
+            CMD java -jar eureka-server.jar
+            '
+        );
+    }
+    default values {
+        basic endpoints {
+            Eureka::_protocols.eureka_discovery: "http://localhost:8761/eureka";
+        }
+    }
+}
