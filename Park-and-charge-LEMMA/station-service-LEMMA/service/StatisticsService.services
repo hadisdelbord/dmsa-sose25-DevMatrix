@@ -1,0 +1,43 @@
+import datatypes from "../domain/statistics-service-domain.data" as stats
+import technology from "../../technology/common.technologyy" as java
+
+@technology(java)
+@sync(java::_protocols.rest)
+@Spring::_aspects.Application(name="StatisticsService")
+@endpoints(
+    java::_protocols.rest: "/api", "/statistics"
+)
+architecture functional microservice com.fhdo.statisticsservice.StatisticsService {
+
+    @endpoints(java::_protocols.rest: "/bookings";)
+    interface StatisticsManagement {
+
+        ---
+        Get all bookings summary for authenticated user.
+        ---
+        @Spring::_aspects.GetMapping
+        getAllBookings(
+            @Spring::_aspects.ResponseEntity
+            sync out summary : stats.BookingSummary
+        )
+
+        ---
+        Get filtered bookings summary for authenticated user.
+        @required request BookingFilterRequest with filters
+        ---
+        @endpoints(java::_protocols.rest: "/filter";)
+        @Spring::_aspects.PostMapping
+        getFilteredBookings(
+            @Spring::_aspects.RequestBody
+            sync in filter : stats.BookingFilterRequest,
+            @Spring::_aspects.ResponseEntity
+            sync out summary : stats.BookingSummary
+        )
+    }
+
+    deployment technology Eureka::_deployment.EurekaClient {
+        service_name = "STATISTICS-SERVICE";
+        eureka_server_url = "http://eureka-server:8761/eureka";
+        port = 8090;
+    }
+}

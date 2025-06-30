@@ -1,0 +1,27 @@
+import microservices from "../service/StatisticsService.services" as Services
+import technology from "../../technology/common.technologyy" as java
+
+@technology(java)
+container StatisticsServiceContainer
+    deployment technology Docker::_deployment.Docker
+    deploys Services::com.fhdo.statisticsservice.StatisticsService {
+        aspects {
+            Docker::_aspects.Dockerfile(
+                '
+                FROM openjdk:17-jre-slim
+                WORKDIR /app
+                COPY statistics-service.jar .
+                EXPOSE 8090
+                ENV SPRING_PROFILES_ACTIVE=production
+                ENV SERVER_PORT=8090
+                ENV EUREKA_CLIENT_SERVICE_URL=http://eureka-server:8761/eureka
+                CMD java ${JAVA_OPTS} -jar statistics-service.jar
+                '
+            )
+        }
+        default values {
+            basic endpoints {
+                Spring::_protocols.http: "http://localhost:8090";
+            }
+        }
+    }

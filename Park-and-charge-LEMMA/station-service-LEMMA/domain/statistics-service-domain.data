@@ -1,0 +1,35 @@
+context StatisticsContext {
+
+    // === ENTITIES ===
+
+    // BookingSummary entity, matching BookingSummaryResponseDTO
+    structure BookingSummary<entity> {
+        // List of bookings (Booking)
+        list<Booking> bookings,
+
+        // Total price of all bookings
+        double totalPrice,
+
+        // Total average price
+        double totalAveragePrice,
+
+        // Names of stations involved
+        list<string> stationNames
+    }
+
+    // Booking entity, matching BookingDTO (cleaned up)
+    structure Booking<entity> {
+        string ownerID,
+        string stationId,
+        double totalPrice,
+        string status,
+        dateTime dateTime      // Use 'dateTime' to match LocalDateTime
+    }
+
+    // Booking filter structure, matching BookingFilterRequestDTO
+    structure BookingFilterRequest {
+        string ownerId,
+        list<string> stationIds,
+        string dateRange         // e.g. "last_month", "last_week"
+    }
+}
