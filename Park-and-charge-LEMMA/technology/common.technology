@@ -46,6 +46,9 @@ technology common {
         aspect PreAuthorize<singleval>;
         aspect Bean<singleval>;
     }
+     operation aspects {
+        aspect Resilience4jCircuitBreaker<singleval>;
+    }
 
     deployment technologies {
         docker {

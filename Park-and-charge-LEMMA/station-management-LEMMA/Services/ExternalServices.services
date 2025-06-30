@@ -9,6 +9,7 @@ architecture functional microservice com.DevMatrix.UserService {
     
     // Interface for User-related concerns
     @endpoints(java::_protocols.rest: "/users";)
+    @java::Resilience4jCircuitBreaker
     interface UserManagement {
         ---
         Get user information by email.

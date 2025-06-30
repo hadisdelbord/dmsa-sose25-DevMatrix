@@ -15,7 +15,7 @@ context StationManagement {
         // Embedded
         PostalCode postalCode,
         // Embedded
-        GeoLocation locatio,       
+        GeoLocation location,       
         // OneToMany(mappedBy = "address")
         list ChargingStation[] chargingStations
     }

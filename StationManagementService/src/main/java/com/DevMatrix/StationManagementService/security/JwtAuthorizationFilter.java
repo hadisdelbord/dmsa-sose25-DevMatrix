@@ -22,6 +22,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws IOException, ServletException {
+        String requestPath = request.getRequestURI();
+        
+        // CRITICAL: Skip JWT processing for H2 console
+        if (requestPath.startsWith("/h2-console")) {
+            System.out.println("Skipping JWT filter for H2 console: " + requestPath);
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         String header = request.getHeader("Authorization");
         System.out.println("Incoming token header: " + header);

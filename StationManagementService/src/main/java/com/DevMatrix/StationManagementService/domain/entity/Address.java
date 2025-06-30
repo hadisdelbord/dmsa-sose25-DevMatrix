@@ -21,6 +21,8 @@ public class Address {
     private String street;
     @Embedded
     private PostalCode postalCode;
+    @Embedded
+    private GeoLocation location;
 
     @OneToMany(mappedBy = "address")
     private List<ChargingStation> chargingStations;
@@ -30,11 +32,12 @@ public class Address {
     }
 
     @Builder
-    public Address( String state, String city, String street, PostalCode postalCode, List<ChargingStation> chargingStations) {
+    public Address( String state, String city, String street, PostalCode postalCode, GeoLocation location,List<ChargingStation> chargingStations) {
     this.state = state;
     this.city = city;
     this.street = street;
     this.postalCode = postalCode;
+    this.location = location;
     this.chargingStations = chargingStations;
 }
     public Long getId() {
@@ -79,6 +82,15 @@ public class Address {
 
     public void setPostalCode(PostalCode postalCode) {
         this.postalCode = postalCode;
+    }
+
+    // Getter and Setter for geoLocation
+    public GeoLocation getGeoLocation() {
+        return location;
+    }
+
+    public void setGeoLocation(GeoLocation location) {
+        this.location = location;
     }
 
     // Getter and Setter for chargingStations
