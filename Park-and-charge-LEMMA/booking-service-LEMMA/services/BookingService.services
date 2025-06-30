@@ -9,7 +9,7 @@ import datatypes from "../domain/booking-service-domain.data" as booking
 )
 architecture functional microservice com.DevMatrix.BookingService {
 
-    @endpoints(java::_protocols.rest: "/Bookings";)
+    @endpoints(java::_protocols.rest: "/bookings";)
     interface BookingManagement {
 
                 --- 

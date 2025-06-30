@@ -1,19 +1,14 @@
 package com.parkandcharge.booking_service.controller;
 
-import com.parkandcharge.booking_service.dto.AddressDto;
 import com.parkandcharge.booking_service.dto.BookingDto;
 import com.parkandcharge.booking_service.dto.BookingViewDto;
-import com.parkandcharge.booking_service.dto.ChargingStationDto;
-import com.parkandcharge.booking_service.dto.OfferSlotDto;
 import com.parkandcharge.booking_service.mapper.BookingMapper;
 import com.parkandcharge.booking_service.model.Booking;
 import com.parkandcharge.booking_service.service.BookingService;
-import com.parkandcharge.booking_service.service.OfferClient;
 
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,9 +21,6 @@ public class BookingController {
 
     @Autowired
     private BookingService bookingService;
-
-    @Autowired
-    private OfferClient offerClient;
 
     @Autowired
     private BookingMapper bookingMapper;
@@ -120,39 +112,6 @@ public class BookingController {
                 .map(bookingMapper::toDto)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
-    }
-
-    @GetMapping("/user/{userId}/details")
-    public ResponseEntity<List<BookingViewDto>> getUserBookingDetails(@PathVariable Long userId) {
-        List<Booking> bookings = bookingService.getBookingsByUserId(userId);
-
-        List<BookingViewDto> result = bookings.stream().map(booking -> {
-            OfferSlotDto offer = offerClient.getOfferById(booking.getOfferId());
-
-            BookingViewDto dto = new BookingViewDto();
-            dto.setBookingId(booking.getBookingId());
-            dto.setBookingStatus(booking.getBookingStatus());
-            dto.setSlotDate(offer.getSlotDate());
-            dto.setPricePerSlot(offer.getPricePerSlot());
-            dto.setTimeSlot(offer.getTimeSlot());
-
-            ChargingStationDto station = offer.getChargingStation();
-            if (station != null) {
-                dto.setStationName("Station #" + station.getId()); // Or real name if you have it
-                dto.setPowerOutput(station.getPowerOutput());
-
-                AddressDto addr = station.getAddress();
-                if (addr != null) {
-                    dto.setCity(addr.getCity());
-                    dto.setStreet(addr.getStreet());
-                    dto.setPostalCode(addr.getPostalCode());
-                }
-            }
-
-            return dto;
-        }).toList();
-
-        return ResponseEntity.ok(result);
     }
 
     // get Bookings by offer_id

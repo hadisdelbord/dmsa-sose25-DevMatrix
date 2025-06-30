@@ -21,4 +21,6 @@ public class BookingViewDto {
     private String city;
     private String street;
     private String postalCode;
+    private double latitude;
+    private double longitude;
 }
