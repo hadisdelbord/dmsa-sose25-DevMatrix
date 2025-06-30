@@ -22,7 +22,18 @@
     <table class="table table-bordered">
       <thead class="table-light">
         <tr>
-          <th>Select</th>
+          <th>
+            <div class="d-flex align-items-center">
+              <input 
+                type="checkbox" 
+                v-model="selectAll" 
+                @change="toggleSelectAll"
+                :indeterminate="isIndeterminate"
+                class="me-2"
+              />
+              <span>Select All</span>
+            </div>
+          </th>
           <th>Time Slot</th>
           <th>Price (€)</th>
           <th>Available</th>
@@ -31,7 +42,7 @@
       <tbody>
         <tr v-for="(slot, index) in paginatedSlots" :key="index">
           <td>
-            <input type="checkbox" v-model="slot.selected" />
+            <input type="checkbox" v-model="slot.selected" @change="updateSelectAllState" />
           </td>
           <td>{{ slot.timeRange }}</td>
           <td>
@@ -74,17 +85,17 @@
     </div>
   </div>
 
-      <!-- Bootstrap Toast Notification -->
-    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1100">
-      <div ref="toastRef" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive"
-           aria-atomic="true">
-        <div class="d-flex">
-          <div class="toast-body">{{ toastMessage }}</div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
-                  @click="hideToast"></button>
-        </div>
+  <!-- Bootstrap Toast Notification -->
+  <div class="position-fixed top-0 end-0 p-3" style="z-index: 1100">
+    <div ref="toastRef" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive"
+         aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">{{ toastMessage }}</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
+                @click="hideToast"></button>
       </div>
     </div>
+  </div>
 </template>
 
 <script setup>
@@ -102,6 +113,7 @@ const pageSize = 5;
 const toastMessage = ref('');
 const toastInstance = ref(null);
 const toastRef = ref(null);
+const selectAll = ref(false);
 
 watch([selectedStationId, selectedDate], ([station, date]) => {
   if (station && date) {
@@ -109,12 +121,23 @@ watch([selectedStationId, selectedDate], ([station, date]) => {
   }
 });
 
+// Watch for changes in offerSlots to update selectAll state
+watch(offerSlots, () => {
+  updateSelectAllState();
+}, { deep: true });
+
 const paginatedSlots = computed(() => {
   const start = (currentPage.value - 1) * pageSize;
   return offerSlots.value.slice(start, start + pageSize);
 });
 
 const totalPages = computed(() => Math.ceil(offerSlots.value.length / pageSize));
+
+// Computed property to determine if checkbox should be in indeterminate state
+const isIndeterminate = computed(() => {
+  const selectedCount = offerSlots.value.filter(slot => slot.selected).length;
+  return selectedCount > 0 && selectedCount < offerSlots.value.length;
+});
 
 const generateTimeSlots = () => {
   const slots = [];
@@ -200,6 +223,35 @@ const saveSlots = async () => {
   } catch (error) {
     console.error('Failed to save slots:', error);
   }
+};
+
+// Select All functionality
+const toggleSelectAll = () => {
+  const shouldSelectAll = selectAll.value;
+  offerSlots.value.forEach(slot => {
+    slot.selected = shouldSelectAll;
+  });
+};
+
+const updateSelectAllState = () => {
+  const selectedCount = offerSlots.value.filter(slot => slot.selected).length;
+  const totalCount = offerSlots.value.length;
+  
+  if (selectedCount === 0) {
+    selectAll.value = false;
+  } else if (selectedCount === totalCount) {
+    selectAll.value = true;
+  } else {
+    selectAll.value = false;
+  }
+  
+  // Set indeterminate state for the checkbox
+  nextTick(() => {
+    const checkbox = document.querySelector('input[type="checkbox"]');
+    if (checkbox) {
+      checkbox.indeterminate = isIndeterminate.value;
+    }
+  });
 };
 
 // Toast handlers
