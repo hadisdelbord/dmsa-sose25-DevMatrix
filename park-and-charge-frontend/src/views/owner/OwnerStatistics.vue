@@ -62,7 +62,6 @@
       </div>
 
       <div>
-        <button class="btn btn-primary me-2" @click="applyFilters">Apply</button>
         <button class="btn btn-outline-secondary" @click="resetFilters">Reset Filters</button>
       </div>
     </div>
