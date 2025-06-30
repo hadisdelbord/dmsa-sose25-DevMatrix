@@ -3,6 +3,7 @@ import technology from "../../technology/common.technologyy" as java
 
 @technology(java)
 @sync(java::_protocols.rest)
+@Spring::_aspects.Application(name="MapService")
 @endpoints(
     java::_protocols.rest: "/api", "/payment"
 )
@@ -15,15 +16,20 @@ architecture functional microservice com.ParkAndCharge.PaymentService {
         Create a new payment.
         @required payment payment data
         ---
+        @Spring::_aspects.PostMapping
         createPayment(
+            @Spring::_aspects.RequestBody
             sync in payment : payment.Payment,
+            @Spring::_aspects.ResponseEntity
             sync out savedPayment : payment.Payment
         )
 
         ---
         Get all payments.
         ---
+        @Spring::_aspects.GetMapping
         getAllPayments(
+            @Spring::_aspects.ResponseEntity
             sync out payments : payment.Payments
         )
 
@@ -32,8 +38,11 @@ architecture functional microservice com.ParkAndCharge.PaymentService {
         @required id ID of the payment
         ---
         @endpoints(java::_protocols.rest: "/{id}";)
+        @Spring::_aspects.GetMapping
         getPaymentById(
+            @Spring::_aspects.PathVariable
             sync in id : long,
+            @Spring::_aspects.ResponseEntity
             sync out payment : payment.Payment
         )
 
@@ -43,9 +52,13 @@ architecture functional microservice com.ParkAndCharge.PaymentService {
         @required updatedPayment Updated payment data
         ---
         @endpoints(java::_protocols.rest: "/{id}";)
+        @Spring::_aspects.PostMapping
         updatePayment(
+            @Spring::_aspects.PathVariable
             sync in id : long,
+            @Spring::_aspects.RequestBody
             sync in updatedPayment : payment.Payment,
+            @Spring::_aspects.ResponseEntity
             sync out payment : payment.Payment
         )
 
@@ -54,8 +67,23 @@ architecture functional microservice com.ParkAndCharge.PaymentService {
         @required id ID of the payment
         ---
         @endpoints(java::_protocols.rest: "/{id}";)
+        @Spring::_aspects.DeleteMapping
         deletePayment(
+            @Spring::_aspects.PathVariable
             sync in id : long
+        )
+
+        ---
+        get payments by bookingId.
+        @required id bookingId of the booking
+        ---
+        @endpoints(java::_protocols.rest: "/{bookingId}";)
+        @Spring::_aspects.GetMapping
+        deletePayment(
+            @Spring::_aspects.PathVariable
+            sync in id : long,
+            @Spring::_aspects.ResponseEntity
+            sync out payments : payment.payments
         )
     }
 

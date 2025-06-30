@@ -1,4 +1,3 @@
-import technology from "../../technology/common.technologyy" as java
 
 // Domain Layer
 context MapServiceDomain {
@@ -15,4 +14,32 @@ context MapServiceDomain {
         string displayName,
         Coordinates coordinates
     }
+// === dTOS ===
+    structure LocationCreationDTO<valueObject> {
+         long stationId,
+         string state,
+         string city,
+         string street,
+         int zipCode
+    }
+
+    structure LocationDTO<valueObject> {
+         double lat,
+         double lon,
+         string displayName,
+         string type
+    }
+    collection Locations {
+    map::v1.MapService.Location[] locations
+}
+// === REPOSITORIES ===
+structure LocationRepository<repository> {
+    function map::v1.MapService.Location? findByStationId(long stationId),
+    function Locations findByZipCode(int zipCode)
+}
+// === SERVICES ===
+structure GeoLocationService<applicationService> {
+    function map::v1.MapService.LocationDTO? getLocationDTO(string address),
+    function string convertLocationCreationToQuery(map::v1.MapService.LocationCreationDTO locationCreationDTO)
+}
 }

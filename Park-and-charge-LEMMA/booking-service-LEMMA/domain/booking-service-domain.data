@@ -13,4 +13,67 @@ context BookingService {
         CONFIRMED("CONFIRMED"),
         CANCELLED("CANCELLED")
     }
+     // === DTOs ===
+    structure BookingDto<valueObject> {
+        long id,
+        long driverId,
+        long offerSlotId,
+        string bookingDate,
+        string bookingStatus
+    }
+
+    structure BookingViewDto<valueObject> {
+        long id,
+        long driverId,
+        string driverName,
+        string driverEmail,
+        string stationName,
+        string bookingDate,
+        string timeSlot,
+        float pricePerSlot,
+        string bookingStatus
+    }
+
+    structure AddressDto<valueObject> {
+        string state,
+        string city,
+        string street,
+        string postalCode
+    }
+
+    structure ChargingStationDto<valueObject> {
+        long id,
+        string name,
+        string activityStatus,
+        float powerOutput,
+        AddressDto address
+    }
+
+    structure OfferSlotDto<valueObject> {
+        long id,
+        string timeSlot,
+        float pricePerSlot,
+        boolean isAvailable,
+        string slotDate,
+        int slotDuration,
+        ChargingStationDto chargingStation
+    }
+
+    // === Collection ===
+    collection BookingList { Booking booking }
+
+    // === Repository ===
+    structure BookingRepository<repository> {
+        function BookingList findByDriverId(long driverId),
+        function Booking findById(long id)
+    }
+
+    // === Application Service ===
+    structure BookingService<applicationService> {
+        function Booking createBooking(Booking booking),
+        function Booking updateBooking(Booking booking),
+        function void deleteBooking(long id),
+        function Booking getBookingById(long id),
+        function BookingList getBookingsByDriver(long driverId)
+    }
 }

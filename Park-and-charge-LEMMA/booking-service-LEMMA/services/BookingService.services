@@ -3,6 +3,7 @@ import datatypes from "../domain/booking-service-domain.data" as booking
 
 @technology(java)
 @sync(java::_protocols.rest)
+@Spring::_aspects.Application(name="BookingService")
 @endpoints(
     java::_protocols.rest: "/api";
 )
@@ -11,22 +12,24 @@ architecture functional microservice com.DevMatrix.BookingService {
     @endpoints(java::_protocols.rest: "/Bookings";)
     interface BookingManagement {
 
+                --- 
+        Get all bookings. 
         ---
-        Get all bookings for a driver.
-        @required driverId The ID of the driver.
-        ---
-        getBookingsByDriver(
-            sync in driverId : long,
+        @Spring::_aspects.GetMapping
+        getAllBookings(
+            @Spring::_aspects.ResponseEntity
             sync out bookings : booking::v1.BookingService.Bookings
         );
-
+        
         ---
         Get a booking by its ID.
         @required bookingId The ID of the booking.
         ---
-        @endpoints(java::_protocols.rest: "/{bookingId}";)
+        @endpoints(java::_protocols.rest: "/{id}";)
         getBookingById(
-            sync in bookingId : long,
+            @Spring::_aspects.PathVariable
+            sync in id : long,
+            @Spring::_aspects.ResponseEntity
             sync out booking : booking::v1.BookingService.Booking
         );
 
@@ -34,17 +37,73 @@ architecture functional microservice com.DevMatrix.BookingService {
         Create a new booking.
         @required bookingData The booking information.
         ---
+        @Spring::_aspects.PostMapping
         createBooking(
-            sync in bookingData : booking::v1.BookingService.Booking,
+            @Spring::_aspects.RequestBody
+            sync in dto : booking::v1.BookingService.Booking,
+            @Spring::_aspects.ResponseEntity
             sync out createdBooking : booking::v1.BookingService.Booking
+        );
+
+        
+        ---
+        Delete a booking by its ID.
+        ---
+        @endpoints(java::_protocols.rest: "/{id}";)
+        @Spring::_aspects.DeleteMapping
+        deleteBooking(
+            @Spring::_aspects.PathVariable
+            sync in id : long
+        );
+
+                ---
+        Update a booking by its ID.
+        ---
+        @endpoints(java::_protocols.rest: "/{id}";)
+        @Spring::_aspects.PutMapping
+        updateBooking(
+            @Spring::_aspects.PathVariable
+            sync in id : long,
+            @Spring::_aspects.RequestBody
+            sync in dto : booking::v1.BookingService.Booking,
+            @Spring::_aspects.ResponseEntity
+            sync out updatedBooking : booking::v1.BookingService.Booking
+        );
+
+        ---
+        Confirm a booking by ID.
+        ---
+        @endpoints(java::_protocols.rest: "/{id}/confirm";)
+        @Spring::_aspects.PutMapping
+        confirmBooking(
+            @Spring::_aspects.PathVariable
+            sync in id : long,
+            @Spring::_aspects.ResponseEntity
+            sync out result : booking::v1.BookingService.Booking
+        );
+
+        ---
+        Complete a booking by ID.
+        ---
+        @endpoints(java::_protocols.rest: "/{id}/complete";)
+        @Spring::_aspects.PutMapping
+        completeBooking(
+            @Spring::_aspects.PathVariable
+            sync in id : long,
+            @Spring::_aspects.ResponseEntity
+            sync out result : booking::v1.BookingService.Booking
         );
 
         ---
         Cancel an existing booking.
         @required bookingId The ID of the booking.
         ---
+         @endpoints(java::_protocols.rest: "/Cancel/{bookingId}";)
+        @Spring::_aspects.PostMapping
         cancelBooking(
+            @Spring::_aspects.PathVariable
             sync in bookingId : long,
+            @Spring::_aspects.ResponseEntity
             sync out result : string
         );
     }

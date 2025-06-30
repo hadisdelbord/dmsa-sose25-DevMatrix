@@ -2,10 +2,11 @@ import technology from "../../technology/common.technology" as java
 import datatypes from "../domain/station-management-domain.data" as banking
 
 @technology(java)
-@sync(java::_protocols.rest)
+@sync(Protocols::_protocols.rest)
 @endpoints(
     java::_protocols.rest: "/api";
 )
+@Spring::_aspects.Application(name="StationManagementService")
 architecture functional microservice com.DevMatrix.StationManagementService {
     
     // Address Management Interface
@@ -15,9 +16,12 @@ architecture functional microservice com.DevMatrix.StationManagementService {
     --- 
     Create an address.
     ---
+    @Spring::_aspects.RequestBody
     @endpoints(java::_protocols.rest: "/Create";)
+    @Spring::_aspects.PostMapping
     createAddress(
         sync in addressData : station::v1.StationManagement.Address,
+        @Spring::_aspects.ResponseEntity
         sync out createdAddress : station::v1.StationManagement.Address
     );
 
@@ -25,10 +29,15 @@ architecture functional microservice com.DevMatrix.StationManagementService {
     Update or create an address.
     ---
     @endpoints(java::_protocols.rest: "/Update/isEdit/{isEdit}";)
+    @Spring::_aspects.PostMapping
     updateLocation(
+        @Spring::_aspects.PathVariable
         sync in isEdit : boolean,
+        @Spring::_aspects.RequestParam?
         sync in id? : long,
+        @Spring::_aspects.RequestBody
         sync in addressData : station::v1.StationManagement.Address,
+        @Spring::_aspects.ResponseEntity
         sync out updatedAddress : station::v1.StationManagement.Address
     );
 
@@ -36,8 +45,11 @@ architecture functional microservice com.DevMatrix.StationManagementService {
     Retrieve address by ID.
     ---
     @endpoints(java::_protocols.rest: "/GetData/{id}";)
+    @Spring::_aspects.GetMapping
     getData(
+        @Spring::_aspects.PathVariable
         sync in id : long,
+        @Spring::_aspects.ResponseEntity
         sync out address : station::v1.StationManagement.Address
     );
 
@@ -45,7 +57,9 @@ architecture functional microservice com.DevMatrix.StationManagementService {
     Get all addresses.
     ---
     @endpoints(java::_protocols.rest: "/GetAll";)
+    @Spring::_aspects.GetMapping
     getAll(
+         @Spring::_aspects.ResponseEntity
         sync out addresses : station::v1.StationManagement.Addresses
     );
 
@@ -54,7 +68,8 @@ architecture functional microservice com.DevMatrix.StationManagementService {
     ---
     @endpoints(java::_protocols.rest: "/Delete/{id}";)
     delete(
-        sync in id : long
+            @Spring::_aspects.PathVariable
+            sync in id : long
     );
 }
 
@@ -68,17 +83,23 @@ interface ChargingStationManagement {
     @required authToken Authorization token (from header).
     ---
     @endpoints(java::_protocols.rest: "/GetAll";)
+    @Spring::_aspects.GetMapping
     getAll(
+        @Spring::_aspects.RequestHeader
         sync in authToken : string,
+        @Spring::_aspects.ResponseEntity
         sync out stations : station::v1.StationManagement.ChargingStations
     );
 
     --- 
     Get a charging station by ID.
     ---
-    @endpoints(java::_protocols.rest: "/GetStation/StationId/{stationId}";)
+    @endpoints(java::_protocols.rest: "/GetStation/StationId/{id}";)
+    @Spring::_aspects.GetMapping
     getStationById(
-        sync in stationId : long,
+        @Spring::_aspects.PathVariable
+        sync in id : long,
+        @Spring::_aspects.ResponseEntity
         sync out chargingStation : station::v1.StationManagement.ChargingStation
     );
 
@@ -86,39 +107,55 @@ interface ChargingStationManagement {
     Create or update a charging station based on isEdit flag.
     ---
     @endpoints(java::_protocols.rest: "/UpdateStation/isEdit/{isEdit}";)
+    @Spring::_aspects.PostMapping   
     updateChargingStation(
-        sync in isEdit : boolean,
-        sync in stationId? : long,
-        sync in stationData : station::v1.StationManagement.ChargingStation,
-        sync in authToken : string,
-        sync out updatedStation : station::v1.StationManagement.ChargingStation,
-        sync out fault errorCode : int
+             @Spring::_aspects.PathVariable
+            sync in isEdit : boolean,
+            @Spring::_aspects.RequestParam?
+            sync in stationId? : long,
+            @Spring::_aspects.RequestBody
+            sync in stationData : station::v1.StationManagement.ChargingStation,
+            @Spring::_aspects.RequestHeader
+            sync in authToken : string,
+            @Spring::_aspects.ResponseEntity
+            sync out updatedStation : station::v1.StationManagement.ChargingStation,
+            @Spring::_aspects.ResponseEntity
+            sync out fault errorCode : int
     );
 
     --- 
     Update a charging station by ID.
     ---
     @endpoints(java::_protocols.rest: "/UpdateStation/StationId/{stationId}";)
+    @Spring::_aspects.PutMapping
     updateStation(
-        sync in stationId : long,
-        sync in stationData : station::v1.StationManagement.ChargingStation,
-        sync out updatedStation : station::v1.StationManagement.ChargingStation
+            @Spring::_aspects.PathVariable
+            sync in stationId : long,
+            @Spring::_aspects.RequestBody
+            sync in stationData : station::v1.StationManagement.ChargingStation,
+            @Spring::_aspects.ResponseEntity
+            sync out updatedStation : station::v1.StationManagement.ChargingStation
     );
 
     --- 
     Delete a charging station by ID.
     ---
     @endpoints(java::_protocols.rest: "/DeleteStation/{stationId}";)
+    @Spring::_aspects.DeleteMapping
     deleteStation(
-        sync in stationId : long
+            @Spring::_aspects.PathVariable
+            sync in stationId : long
     );
 
     --- 
     Get stations by user ID (direct input).
     ---
     @endpoints(java::_protocols.rest: "/GetByUserId";)
+    @Spring::_aspects.GetMapping
     getStationsByUserId(
+        @Spring::_aspects.RequestParam
         sync in userId : long,
+        @Spring::_aspects.ResponseEntity
         sync out stations : station::v1.StationManagement.ChargingStations
     );
 }
@@ -132,17 +169,22 @@ interface OfferSlotManagement {
     Get all offer slots.
     ---
     @endpoints(java::_protocols.rest: "/GetAll";)
+    @Spring::_aspects.GetMapping
     getAll(
-        sync out offerSlots : station::v1.StationManagement.OfferSlots
+            @Spring::_aspects.ResponseEntity
+            sync out offerSlots : station::v1.StationManagement.OfferSlots
     );
 
     ---
     Retrieve a specific offer slot by ID.
     ---
     @endpoints(java::_protocols.rest: "/GetOffer/OfferId/{slotId}";)
+    @Spring::_aspects.GetMapping
     getOfferById(
-        sync in slotId : long,
-        sync out offerSlot : station::v1.StationManagement.OfferSlot
+            @Spring::_aspects.PathVariable
+            sync in slotId : long,
+            @Spring::_aspects.ResponseEntity
+            sync out offerSlot : station::v1.StationManagement.OfferSlot
     );
 
     ---
@@ -151,10 +193,14 @@ interface OfferSlotManagement {
     @required slotDate The date for filtering.
     ---
     @endpoints(java::_protocols.rest: "/GetOfferByStation/station/{stationId}";)
+     @Spring::_aspects.GetMapping
     getOffersByStationAndDate(
-        sync in stationId : long,
-        sync in slotDate : date,
-        sync out offerSlots : station::v1.StationManagement.OfferSlots
+            @Spring::_aspects.PathVariable
+            sync in stationId : long,
+            @Spring::_aspects.RequestParam
+            sync in slotDate : date,
+            @Spring::_aspects.ResponseEntity
+            sync out offerSlots : station::v1.StationManagement.OfferSlots
     );
 
     ---
@@ -162,10 +208,14 @@ interface OfferSlotManagement {
     @required offerSlots The list of slots to be created/updated.
     ---
     @endpoints(java::_protocols.rest: "/CreateOrUpdate";)
+    @Spring::_aspects.PostMapping
     createOrUpdate(
-        sync in offerSlots : station::v1.StationManagement.OfferSlots,
-        sync out result : string,
-        sync out fault errorCode : int
+            @Spring::_aspects.RequestBody
+            sync in offerSlots : station::v1.StationManagement.OfferSlots,
+            @Spring::_aspects.ResponseEntity
+            sync out result : string,
+            @Spring::_aspects.ResponseEntity
+            sync out fault errorCode : int
     );
 
     ---
@@ -174,18 +224,24 @@ interface OfferSlotManagement {
     @required slotData Updated offer slot data.
     ---
     @endpoints(java::_protocols.rest: "/UpdateOffer/OfferId/{slotId}";)
+    @Spring::_aspects.PutMapping
     update(
-        sync in slotId : long,
-        sync in slotData : station::v1.StationManagement.OfferSlot,
-        sync out fault errorCode : int
+            @Spring::_aspects.PathVariable
+            sync in slotId : long,
+            @Spring::_aspects.RequestBody
+            sync in slotData : station::v1.StationManagement.OfferSlot,
+            @Spring::_aspects.ResponseEntity
+            sync out fault errorCode : int
     );
 
     ---
     Delete an offer slot by ID.
     ---
     @endpoints(java::_protocols.rest: "/DeleteOffer/OfferId/{slotId}";)
+    @Spring::_aspects.DeleteMapping
     delete(
-        sync in slotId : long
+            @Spring::_aspects.PathVariable
+            sync in slotId : long
     );
 
     ---
@@ -193,18 +249,24 @@ interface OfferSlotManagement {
     @required postalCode The postal code.
     ---
     @endpoints(java::_protocols.rest: "/GetAvailableOffer/postalcode/{postalCode}";)
+    @Spring::_aspects.GetMapping
     getAvailableOffer(
-        sync in postalCode : string,
-        sync out availableOffers : station::v1.StationManagement.OfferSlots
+            @Spring::_aspects.PathVariable
+            sync in postalCode : string,
+            @Spring::_aspects.ResponseEntity
+            sync out availableOffers : station::v1.StationManagement.OfferSlots
     );
 
     ---
     Get offer with station details by offer ID.
     ---
     @endpoints(java::_protocols.rest: "/GetOfferById/OfferId/{offerId}";)
+    @Spring::_aspects.GetMapping
     getOfferWithStationById(
-        sync in offerId : long,
-        sync out offerWithStation : station::v1.StationManagement.OfferSlot
+            @Spring::_aspects.PathVariable
+            sync in offerId : long,
+            @Spring::_aspects.ResponseEntity
+            sync out offerWithStation : station::v1.StationManagement.OfferSlot
     );
 }
     

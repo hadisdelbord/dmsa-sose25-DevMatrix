@@ -1,4 +1,5 @@
 import technology from "../../technology/common.technologyy" as java
+import datatypes from "../domain/map-service-domain.data" as map
 @technology(java)
 @sync(java::_protocols.rest)
 @endpoints(
@@ -6,13 +7,15 @@ import technology from "../../technology/common.technologyy" as java
 )
 architecture functional microservice com.DevMatrix.MapService {
 
-    @endpoints(java::_protocols.rest: "/locations";)
     interface LocationManagement {
 
         ---
         Get all stored locations.
         ---
+         @endpoints(java::_protocols.rest: "/locations";)
+          @Spring::_aspects.GetMapping
         getAllLocations(
+            @Spring::_aspects.ResponseEntity
             sync out locations : map::v1.MapService.Locations
         );
 
@@ -21,8 +24,11 @@ architecture functional microservice com.DevMatrix.MapService {
         @required zipCode the zip code to filter
         ---
         @endpoints(java::_protocols.rest: "/zipcode/{zipCode}";)
+         @Spring::_aspects.GetMapping
         getAllByZipCode(
+            @Spring::_aspects.PathVariable
             sync in zipCode : int,
+            @Spring::_aspects.ResponseEntity
             sync out locations : map::v1.MapService.Locations
         );
 
@@ -31,8 +37,11 @@ architecture functional microservice com.DevMatrix.MapService {
         @required locationData data used to fetch location
         ---
         @endpoints(java::_protocols.rest: "/location/";)
+         @Spring::_aspects.GetMapping
         createLocation(
+            @Spring::_aspects.RequestBody
             sync in locationData : map::v1.MapService.LocationCreation,
+            @Spring::_aspects.ResponseEntity
             sync out location : map::v1.MapService.Location
         );
 
@@ -42,24 +51,40 @@ architecture functional microservice com.DevMatrix.MapService {
         @required locationData new location data
         ---
         @endpoints(java::_protocols.rest: "/location/station/{stationId}";)
+         @Spring::_aspects.GetMapping
         updateLocation(
+            @Spring::_aspects.PathVariable
             sync in stationId : long,
+            @Spring::_aspects.RequestBody
             sync in locationData : map::v1.MapService.LocationCreation,
+            @Spring::_aspects.ResponseEntity
             sync out location : map::v1.MapService.Location
         );
     }
 
-    @endpoints(java::_protocols.rest: "/location";)
+    @endpoints(java::_protocols.rest: "/map";)
     interface LocationLookup {
 
+        ---
+        show location data for a given query string (used in web).
+        
+        ---
+        @endpoints(java::_protocols.rest: "/";)
+        @Spring::_aspects.GetMapping
+        showMap(
+            sync out "map/show"
+        );
         ---
         Get location data for a given query string (used in web).
         @required query address string
         ---
-        @endpoints(java::_protocols.rest: "/location/";)
-        getLocationFromQuery(
+        @endpoints(java::_protocols.rest: "/location";)
+        @Spring::_aspects.GetMapping
+        showMap(
+            @Spring::_aspects.RequestParam
             sync in query : string,
-            sync out geoData : map::v1.MapService.GeoResponse
+            @Spring::_aspects.ResponseEntity
+            sync out location : map.Locations
         );
     }
 

@@ -1,12 +1,38 @@
-structure Payment {
-    long id
-    float amount
-    string method
-    string status
-    string transactionId
-    dateTime paymentDate
-}
+context PaymentContext {
 
-collection Payments {
-    Payment[] payments
+    // Entity
+    // Table(name = "payments")
+    structure Payment<entity> {
+        // Id
+        // GeneratedValue(strategy = GenerationType.IDENTITY)
+                // Id
+        // GeneratedValue(strategy = GenerationType.IDENTITY)
+        immutable long id<identifier>,
+
+        // Column(name = "booking_id")
+        long bookingId,
+
+        // Column(name = "booking_amount")
+        float bookingAmount,
+
+        // Column(name = "booking_date")
+        date bookingDate,
+
+        // Column(name = "payment_method")
+        string paymentMethod
+    }
+
+    // === REPOSITORIES ===
+    structure PaymentRepository<repository> {
+        function list<Payment> findByBookingId(long bookingId),
+    }
+
+    // === SERVICES ===
+    structure PaymentService<applicationService> {
+        function Payment createPayment(CreatePaymentRequest request),
+        function list<Payment> getAllPayments(),
+        function payment updatePayment(long id, Payment payment),
+        function deletePayment(long id),
+        function getPaymentsByBookingId(Long bookingId)
+    }
 }

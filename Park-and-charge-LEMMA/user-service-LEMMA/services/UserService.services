@@ -2,6 +2,7 @@ import technology from "../../technology/common.technology" as java
 
 @technology(java)
 @sync(java::_protocols.rest)
+@Spring::_aspects.Application(name="UserService")
 @endpoints(
     java::_protocols.rest: "/api";
 )
@@ -18,12 +19,18 @@ architecture functional microservice com.DevMatrix.UserService {
         @required role User role.
         ---
         @endpoints(java::_protocols.rest: "/register";)
+        @Spring::_aspects.PostMapping
         registerUser(
+            @Spring::_aspects.RequestParam
             sync in name : string,
+            @Spring::_aspects.RequestParam
             sync in email : string,
+            @Spring::_aspects.RequestParam
             sync in password : string,
+            @Spring::_aspects.RequestParam
             sync in role : user::UserContext.UserRole,
-            sync out user : UserResponse
+            @Spring::_aspects.ResponseEntity
+            sync out user : user::UserContext.UserDto
         );
 
         ---
@@ -32,10 +39,15 @@ architecture functional microservice com.DevMatrix.UserService {
         @required password Password.
         ---
         @endpoints(java::_protocols.rest: "/login";)
+        @Spring::_aspects.PostMapping
         loginUser(
+            @Spring::_aspects.RequestParam
             sync in email : string,
+            @Spring::_aspects.RequestParam
             sync in password : string,
-            sync out loginResponse : LoginResponse,
+            @Spring::_aspects.ResponseEntity
+            sync out loginResponse : user::UserContext.LoginResponse,
+            @Spring::_aspects.ResponseEntity
             sync out fault error : string
         );
 
@@ -44,28 +56,15 @@ architecture functional microservice com.DevMatrix.UserService {
         @required email Email to search.
         ---
         @endpoints(java::_protocols.rest: "/GetUserInfo";)
+        @Spring::_aspects.GetMapping
         getUserByEmail(
+            @Spring::_aspects.RequestParam
             sync in email : string,
-            sync out user : UserResponse
+            @Spring::_aspects.ResponseEntity
+            sync out user : user::UserContext.UserDto
         );
     }
 
-    structure UserResponse {
-        long userId,
-        string name,
-        string email,
-        string role
-    }
-
-    structure LoginResponse {
-        long userId,
-        string name,
-        string email,
-        string role,
-        string token
-    }
-
-    
     
     // Eureka Service Discovery Configuration
     deployment technology Eureka::_deployment.EurekaClient {

@@ -26,4 +26,46 @@ context UserContext {
         DRIVER("DRIVER"),
         OWNER("OWNER")
     }
+      // === DTOs ===
+
+    structure UserResponse<valueObject> {
+    immutable long userId,
+    immutable string name,
+    immutable string email,
+    immutable string role
+}
+
+    structure LoginResponse<valueObject> {
+    immutable long userId,
+    immutable string name,
+    immutable string email,
+    immutable string role
+    immutable string token
+}
+
+structure LoginRequest<valueObject> {
+    immutable string email,
+    immutable string password
+}
+
+structure RegisterRequest<valueObject> {
+    immutable string name,
+    immutable string email,
+    immutable string password
+    immutable string role
+}
+// === COLLECTIONS ===
+collection Users { User user }
+// === REPOSITORIES ===
+structure UserRepository<repository> {
+    function User findByEmail(string email),
+    function boolean existsByEmail(string email)
+}
+// === SERVICES ===
+structure UserService<applicationService> {
+    function User register(RegisterRequest request),
+    function string login(LoginRequest request),
+    function User getUserByEmail(string email)
+}
+
 }

@@ -5,20 +5,17 @@ context StationManagement {
     structure Address<entity> {
         // GeneratedValue
         // Id
-        immutable long id<identifier>,
-        
+        immutable long id<identifier>,       
         // Column(name = "state")
-        string state,
-        
+        string state,        
         // Column(name = "city") 
-        string city,
-        
+        string city,       
         // Column(name = "street")
-        string street,
-        
+        string street,      
         // Embedded
         PostalCode postalCode,
-        
+        // Embedded
+        GeoLocation locatio,       
         // OneToMany(mappedBy = "address")
         list ChargingStation[] chargingStations
     }
@@ -30,6 +27,11 @@ context StationManagement {
         
         function boolean equals(PostalCode other),
         function int hashCode()
+    }
+
+    structure GeoLocation <valueObject> {
+        immutable double latitude,
+        immutable double longitude
     }
     
     // Entity
@@ -90,5 +92,112 @@ context StationManagement {
     enum ActivityStatus {
         ACTIVE("ACTIVE"),
         INACTIVE("Inactive")
+    }
+
+    // === DTOS ===
+    structure AddressDto <valueObject> {
+        long id,
+        string state,
+        string city,
+        string street,
+        string postalCode
+    }
+
+    structure ChargingStationDto <valueObject> {
+        long id,
+        string name,
+        long userId,
+        string activityStatus,
+        float powerOutput,
+        AddressDto address
+    }
+
+    structure OfferSlotDto <valueObject> {
+        long id,
+        string timeSlot,
+        float pricePerSlot,
+        boolean isAvailable,
+        datetime slotDate,
+        int slotDuration,
+        long chargingStationId
+    }
+
+    structure AvailableSlotDto <valueObject> {
+        long id,
+        string timeSlot,
+        float pricePerSlot,
+        boolean isAvailable,
+        datetime slotDate,
+        int slotDuration,
+        string postalCode,
+        string stationName
+    }
+
+    structure OfferAndStationDto <valueObject> {
+        long offerId,
+        string stationName,
+        string stationAddress,
+        float pricePerSlot,
+        boolean isAvailable,
+        datetime slotDate,
+        string timeSlot
+    }
+
+        // === COLLECTIONS ===
+
+    collection Addresses { Address address }
+    collection ChargingStations { ChargingStation chargingStation }
+    collection OfferSlots { OfferSlot offerSlot }
+
+       // === REPOSITORIES ===
+
+    structure AddressRepository <repository> {
+        function Address findById(long id),
+        function Addresses findAll(),
+        procedure deleteById(long id)
+    }
+
+    structure ChargingStationRepository <repository> {
+        function ChargingStation findById(long id),
+        function ChargingStations findAllByUserId(long userId),
+        function ChargingStations findAll(),
+        procedure deleteById(long id)
+    }
+
+    structure OfferSlotRepository <repository> {
+        function OfferSlot findById(long id),
+        function OfferSlots findAll(),
+        function OfferSlots findByStationIdAndSlotDate(long stationId, datetime slotDate),
+        function OfferSlots findAvailableOffersByPostalCode(string postalCode),
+        procedure deleteById(long id)
+    }
+       // === SERVICES ===
+
+    structure AddressService <applicationService> {
+        function AddressDto createAddress(AddressDto dto),
+        function AddressDto updateAddress(long id, AddressDto dto),
+        function AddressDto getAddressById(long id),
+        function list<AddressDto> getAllAddresses(),
+        procedure deleteAddress(long id)
+    }
+
+    structure ChargingStationService <applicationService> {
+        function ChargingStationDto createStation(ChargingStationDto dto, string email),
+        function ChargingStationDto updateStation(long id, ChargingStationDto dto),
+        function list<ChargingStationDto> getAllStations(string email),
+        function ChargingStationDto getStationById(long id),
+        function list<ChargingStationDto> GetStationsByUserId(long userId),
+        function boolean deleteStation(long id)
+    }
+
+    structure OfferSlotService <applicationService> {
+        function list<OfferSlotDto> getAll(),
+        function OfferSlotDto update(long id, OfferSlotDto dto),
+        function Optional<OfferSlotDto> getById(long id),
+        function list<OfferSlotDto> GetByStationIdAndDate(long stationId, datetime slotDate),
+        function list<AvailableSlotDto> GetAvailableOffers(string postalCode),
+        function Optional<OfferAndStationDto> GetOfferWithStationById(long offerId),
+        procedure createOrUpdateAll(list<OfferSlotDto> dtos),
+        function boolean delete(long id)
     }
 }
