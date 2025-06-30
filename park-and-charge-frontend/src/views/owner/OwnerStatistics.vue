@@ -24,22 +24,14 @@
       </div>
       <div class="text-center" style="width: 120px;">
         <div
-          class="rounded-circle bg-success bg-opacity-25 text-success fw-bold d-flex align-items-center justify-content-center"
+          class="rounded-circle bg-secondary bg-opacity-25 text-secondary fw-bold d-flex align-items-center justify-content-center"
           style="width: 100px; height: 100px; font-size: 1.3rem; margin: 0 auto;"
         >
-          {{ totalUsageKWh.toFixed(2) }} kWh
+          {{ avgBookingPrice.toFixed(2) }} €
         </div>
-        <div class="mt-2">Total Usage</div>
+        <div class="mt-2">Avg Booking Price</div>
       </div>
-      <div class="text-center" style="width: 120px;">
-        <div
-          class="rounded-circle bg-info bg-opacity-25 text-info fw-bold d-flex align-items-center justify-content-center"
-          style="width: 100px; height: 100px; font-size: 1.3rem; margin: 0 auto;"
-        >
-          {{ avgPricePerKWh.toFixed(2) }} €/kWh
-        </div>
-        <div class="mt-2">Avg Price</div>
-      </div>
+
     </div>
 
     <!-- Filters -->
@@ -83,8 +75,6 @@
           <th>Date</th>
           <th>Status</th>
           <th>Price (€)</th>
-          <th>Usage (kWh)</th>
-          <th>Price per kWh (€)</th>
         </tr>
       </thead>
       <tbody>
@@ -105,8 +95,6 @@
             </span>
           </td>
           <td>{{ b.price.toFixed(2) }}</td>
-          <td>{{ b.usageKWh.toFixed(2) }}</td>
-          <td>{{ b.pricePerKWh.toFixed(2) }}</td>
         </tr>
         <tr v-if="filteredBookings.length === 0">
           <td colspan="6" class="text-center text-muted">No bookings found for the selected filter.</td>
@@ -237,16 +225,11 @@ const totalPrice = computed(() => {
   return filteredBookings.value.reduce((sum, b) => sum + b.price, 0)
 })
 
-// Computed total usage kWh
-const totalUsageKWh = computed(() => {
-  return filteredBookings.value.reduce((sum, b) => sum + b.usageKWh, 0)
+const avgBookingPrice = computed(() => {
+  if (filteredBookings.value.length === 0) return 0
+  return totalPrice.value / filteredBookings.value.length
 })
 
-// Computed avg price per kWh (avoid divide by zero)
-const avgPricePerKWh = computed(() => {
-  if (totalUsageKWh.value === 0) return 0
-  return totalPrice.value / totalUsageKWh.value
-})
 
 // Handlers
 const toggleAllStations = () => {

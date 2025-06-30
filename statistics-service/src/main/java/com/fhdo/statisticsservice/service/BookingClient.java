@@ -10,47 +10,8 @@ import org.springframework.web.client.RestTemplate;
 import java.time.LocalDateTime;
 import java.util.*;
 
-// @Service
-// public class BookingClient {
-//    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//    String ownerId = authentication.getName();
-
-//    @Autowired
-//    private RestTemplate restTemplate;
-
-//    // In-memory cache: ownerId -> List of bookings
-//    private final Map<String, List<BookingDTO>> bookingCache = new HashMap<>();
-
-//    // Fetch fresh bookings from the Booking Microservice
-//    public List<BookingDTO> fetchBookingsFromService(String ownerId) {
-//        String url = "http://booking-service/api/bookings/by-owner/" + ownerId;
-//        ResponseEntity<BookingDTO[]> response = restTemplate.getForEntity(url, BookingDTO[].class);
-//        BookingDTO[] bookingsArray = response.getBody();
-//        return bookingsArray != null ? Arrays.asList(bookingsArray) : new ArrayList<>();
-//    }
-
-//    // Clear cache and fetch fresh data
-//    public List<BookingDTO> getBookingSummary(String ownerId) {
-//        // Clear cache to ensure fresh data
-//        bookingCache.remove(ownerId);
-
-//        // Fetch and cache
-//        List<BookingDTO> bookings = fetchBookingsFromService(ownerId);
-//        bookingCache.put(ownerId, bookings);
-
-//        return bookings;
-//    }
-
-//    // Use cached data for filtering (to be implemented next)
-//    public List<BookingDTO> getCachedBookings(String ownerId) {
-//        return bookingCache.getOrDefault(ownerId, new ArrayList<>());
-//    }
-// }
-
 @Service
 public class BookingClient {
-    // Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    // String ownerId = authentication.getName();
 
     // In-memory cache: ownerId -> List of bookings
     private final Map<String, List<BookingDTO>> bookingCache = new HashMap<>();
@@ -58,27 +19,6 @@ public class BookingClient {
     // Simulate fetching bookings from the Booking Microservice
     public List<BookingDTO> fetchBookingsFromService(String ownerId) {
         List<BookingDTO> fakeBookings = new ArrayList<>();
-        // String[] stations = {"station1", "station2", "station3"};
-        // String[] customers = {"Alice", "Bob", "Charlie", "Diana", "Eve"};
-
-        // for (int i = 0; i < 10; i++) {
-        //     String station = stations[i % stations.length];
-        //     String customer = customers[i % customers.length];
-        //     double usage = 10 + i * 2;
-        //     double pricePerKWh = 0.5 + (i % 3) * 0.1;
-        //     double totalPrice = usage * pricePerKWh;
-
-        //     fakeBookings.add(new BookingDTO(
-        //             ownerId,
-        //             station,
-        //             totalPrice,
-        //             pricePerKWh,
-        //             "COMPLETED",
-        //             usage,
-        //             LocalDateTime.now().minusDays(i * 3),
-        //             customer
-        //     ));
-        // }
 
        fakeBookings = List.of(
                new BookingDTO("123", "station1", 5.0, 0.5, "COMPLETED", 10.0, LocalDateTime.of(2025, 6, 22, 12, 0), "Alice"),
