@@ -177,101 +177,38 @@ export default {
   async mounted() {
     this.initMap();
 
-    // postal code → lat/lng mapping (mock data)
-  const postalCodeCoords = {
-  "44135": { latitude: 51.5135, longitude: 7.4675 },
-  "44137": { latitude: 51.5110, longitude: 7.4650 },
-  "44139": { latitude: 51.5075, longitude: 7.4655 },
-  "44141": { latitude: 51.5090, longitude: 7.4700 },
-  "44143": { latitude: 51.5150, longitude: 7.4750 },
-  "44145": { latitude: 51.5210, longitude: 7.4720 },
-  "44147": { latitude: 51.5190, longitude: 7.4560 },
-  "44149": { latitude: 51.5095, longitude: 7.4360 },
-  "44225": { latitude: 51.4960, longitude: 7.4570 },
-  "44227": { latitude: 51.4920, longitude: 7.4720 },
-  "44229": { latitude: 51.4750, longitude: 7.4630 },
-  "44263": { latitude: 51.4900, longitude: 7.5000 },
-  "44265": { latitude: 51.4760, longitude: 7.5120 },
-  "44267": { latitude: 51.4660, longitude: 7.5250 },
-  "44269": { latitude: 51.4680, longitude: 7.5410 },
-  "44287": { latitude: 51.4965, longitude: 7.5530 },
-  "44289": { latitude: 51.4920, longitude: 7.5700 },
-  "44309": { latitude: 51.5290, longitude: 7.5450 },
-  "44319": { latitude: 51.5295, longitude: 7.5800 },
-  "44328": { latitude: 51.5500, longitude: 7.5500 },
-  "44329": { latitude: 51.5450, longitude: 7.5900 },
-  "44339": { latitude: 51.5430, longitude: 7.4800 },
-  "44357": { latitude: 51.5550, longitude: 7.4300 },
-  "44359": { latitude: 51.5650, longitude: 7.4200 },
-  "44369": { latitude: 51.5200, longitude: 7.4000 },
-  "44379": { latitude: 51.5150, longitude: 7.4400 },
-  "44388": { latitude: 51.5050, longitude: 7.3800 },
-  "44399": { latitude: 51.5300, longitude: 7.5300 },
-  // add more if you want...
-};
-
-
-    const fakeStations = [
-      {
-        name: 'Fake Station 1',
-        address: {
-          city: 'Dortmund',
-          street: 'Musterstraße 1'
-        },
-        latitude: 51.5136,
-        longitude: 7.4653
-      },
-      {
-        name: 'Fake Station 2',
-        address: {
-          city: 'Dortmund',
-          street: 'Beispielweg 5'
-        },
-        latitude: 51.5150,
-        longitude: 7.4670
-      }
-    ];
-
     try {
       const response = await StationService.getAllStationsForMap();
 
       if (Array.isArray(response.data) && response.data.length > 0) {
-        // enrich stations with lat/lng
-        const enrichedStations = response.data.map(station => {
-          const postalCode = station.address?.postalCode?.value;
-          const coords = postalCodeCoords[postalCode];
-          if (coords) {
-            return {
-              stationName: station.name,
-              city: station.address.city,
-              street: station.address.street,
-              latitude: coords.latitude,
-              longitude: coords.longitude
-            };
-          } else {
-            console.warn(`No coordinates found for postal code: ${postalCode}`);
-            return null;
-          }
-        }).filter(s => s !== null); // remove stations without coords
+        // map stations from backend, reading address fields correctly
+        const stations = response.data.map(station => {
+          const addr = station.address || {};
+          return {
+            name: station.name || 'Unnamed Station',
+            city: addr.city || '',
+            street: addr.street || '',
+            postalCode: addr.postalCode?.value || '',
+            latitude: addr.latitude,
+            longitude: addr.longitude,
+          };
+        }).filter(s => s.latitude && s.longitude); // keep only stations with coords
 
-        if (enrichedStations.length > 0) {
-          this.loadLocations(enrichedStations);
+        if (stations.length > 0) {
+          this.loadLocations(stations);
         } else {
-          console.warn('All stations missing coords → using fake data');
-          this.loadLocations(fakeStations);
+          console.warn('No stations with valid coordinates found.');
         }
       } else {
-        console.warn('StationService.GetAll() returned empty or invalid data → using fake data');
-        this.loadLocations(fakeStations);
+        console.warn('StationService returned empty or invalid data.');
       }
     } catch (error) {
       console.error('Error fetching stations:', error);
-      this.loadLocations(fakeStations);
     }
   },
   methods: {
     initMap() {
-      this.map = L.map('map').setView([51.5136, 7.4653], 13); // Dortmund center
+      this.map = L.map('map').setView([51.5136, 7.4653], 13); // default center
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; OpenStreetMap contributors',
@@ -279,26 +216,26 @@ export default {
     },
     loadLocations(stations) {
       stations.forEach(station => {
-        if (station.latitude && station.longitude) {
-          L.marker([station.latitude, station.longitude], {
-            icon: L.icon({
-              iconUrl: chargerIcon,
-              iconSize: [30, 30],
-              iconAnchor: [15, 30],
-              popupAnchor: [0, -30],
-            })
+        L.marker([station.latitude, station.longitude], {
+          icon: L.icon({
+            iconUrl: chargerIcon,
+            iconSize: [30, 30],
+            iconAnchor: [15, 30],
+            popupAnchor: [0, -30],
           })
-            .addTo(this.map)
-            .bindPopup(`
-            <b>${station.stationName || station.name || 'Unnamed Station'}</b><br/>
-            ${station.city || ''}, ${station.street || ''}
-          `);
-        }
+        })
+          .addTo(this.map)
+          .bindPopup(`
+          <b>${station.name}</b><br/>
+          ${station.street}, ${station.city}<br/>
+          Postal Code: ${station.postalCode}
+        `);
       });
     },
   },
 };
 </script>
+
 
 <script setup>
 import { ref, computed, watch, nextTick, onMounted } from 'vue'

@@ -79,6 +79,8 @@ public class ChargingStationServiceImp implements ChargingStationService {
                 addressDto.setCity(address.getCity());
                 addressDto.setStreet(address.getStreet());
                 addressDto.setPostalCode(address.getPostalCode());
+                addressDto.setLatitude(address.getLatitude());
+                addressDto.setLongitude(address.getLongitude());
                 station.setAddress(addressDto);
             });
         }

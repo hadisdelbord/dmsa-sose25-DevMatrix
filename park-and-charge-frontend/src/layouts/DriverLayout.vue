@@ -14,16 +14,6 @@
             <i class="bi bi-calendar-check-fill me-2"></i> Bookings
           </router-link>
         </li>
-        <li class="nav-item mb-2">
-          <router-link to="/profile" class="nav-link text-white" exact-active-class="router-link-active">
-            <i class="bi bi-person-circle me-2"></i> Profile
-          </router-link>
-        </li>
-        <li class="nav-item mb-2">
-          <router-link to="/settings" class="nav-link text-white" exact-active-class="router-link-active">
-            <i class="bi bi-gear-fill me-2"></i> Settings
-          </router-link>
-        </li>
       </ul>
     </div>
 

@@ -10,7 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.Builder;
 
-
 @Entity
 public class Address {
     @Id
@@ -27,19 +26,21 @@ public class Address {
     @OneToMany(mappedBy = "address")
     private List<ChargingStation> chargingStations;
 
-    public Address (){
+    public Address() {
 
     }
 
     @Builder
-    public Address( String state, String city, String street, PostalCode postalCode, GeoLocation location,List<ChargingStation> chargingStations) {
-    this.state = state;
-    this.city = city;
-    this.street = street;
-    this.postalCode = postalCode;
-    this.location = location;
-    this.chargingStations = chargingStations;
-}
+    public Address(String state, String city, String street, PostalCode postalCode, GeoLocation location,
+            List<ChargingStation> chargingStations) {
+        this.state = state;
+        this.city = city;
+        this.street = street;
+        this.postalCode = postalCode;
+        this.location = location;
+        this.chargingStations = chargingStations;
+    }
+
     public Long getId() {
         return id;
     }
@@ -97,7 +98,16 @@ public class Address {
     public List<ChargingStation> getChargingStations() {
         return chargingStations;
     }
-     public void setChargingStations(List<ChargingStation> chargingStations) {
+
+    public void setChargingStations(List<ChargingStation> chargingStations) {
         this.chargingStations = chargingStations;
+    }
+
+    public double getLatitude() {
+        return location.getlatitude();
+    }
+
+    public double getLongitude() {
+        return location.getlongitude();
     }
 }

@@ -1,20 +1,19 @@
 package com.DevMatrix.StationManagementService.Dtos;
 
-
+import com.DevMatrix.StationManagementService.domain.entity.GeoLocation;
 import com.DevMatrix.StationManagementService.domain.entity.PostalCode;
-
-
-
 
 public class AddressDto {
     private long id;
     private String state;
     private String city;
     private String street;
-    private PostalCode postalCode; 
+    private PostalCode postalCode;
+    private Double latitude;
+    private Double longitude;
     // private List<ChargingStationDto> chargingStations;
 
-        // Getters
+    // Getters
     public long getId() {
         return id;
     }
@@ -35,8 +34,16 @@ public class AddressDto {
         return postalCode;
     }
 
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
     // public List<ChargingStationDto> getChargingStations() {
-    //     return chargingStations;
+    // return chargingStations;
     // }
 
     // Setters
@@ -60,7 +67,15 @@ public class AddressDto {
         this.postalCode = postalCode;
     }
 
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
     // public void setChargingStations(List<ChargingStationDto> chargingStations) {
-    //     this.chargingStations = chargingStations;
+    // this.chargingStations = chargingStations;
     // }
 }
