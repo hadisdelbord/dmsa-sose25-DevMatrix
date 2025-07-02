@@ -88,7 +88,7 @@ This project uses a **Microservices Architecture** following **Domain-Driven Des
 | **OfferSlot**     | `offer_id`, `station_id`, `slot_time`, `date`, `price_per_slot`, `is_available`   |
 | **Booking**         | `booking_id`, `user_id`, `offer_id`, `booking_status`                             |
 | **Payment**         | `payment_id`, `booking_id`, `payment_amount`, `payment_date`, `payment_method`    |
-| **Address**         | `address_id`, `street`, `city`, `postal_code`, `country`, `latitude`, `longitude` |
+| **Address**         | `address_id`, `street`, `city`, `postal_code`, `latitude`, `longitude` |
 
 ---
 
