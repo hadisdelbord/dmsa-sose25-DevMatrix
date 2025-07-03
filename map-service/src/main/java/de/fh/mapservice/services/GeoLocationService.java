@@ -1,6 +1,7 @@
 package de.fh.mapservice.services;
 
 import de.fh.mapservice.dtos.LocationCreationDTO;
+import de.fh.mapservice.dtos.LocationAddressConvertDTO;
 import de.fh.mapservice.dtos.LocationDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,16 @@ public class GeoLocationService {
                 locationCreationDTO.getZipCode(),
                 locationCreationDTO.getCity(),
                 locationCreationDTO.getState()
+        );
+    }
+    
+    public String convertLocationAddressToQuery(LocationAddressConvertDTO locationAddressConvertDTO) {
+        // <Street> <Building number>, <Zip code> <City>, <State/Country>
+        return String.format("%s, %s %s, %s",
+                locationAddressConvertDTO.getStreet(),
+                locationAddressConvertDTO.getPostalCode().getValue(),
+                locationAddressConvertDTO.getCity(),
+                locationAddressConvertDTO.getState()
         );
     }
 

@@ -12,24 +12,24 @@ import com.DevMatrix.StationManagementService.Dtos.UserResponse;
 
 @Service
 public class userClient {
+
     private final RestTemplate restTemplate;
-    @Autowired
+
     public userClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
-    
     @CircuitBreaker(name = "userServiceCircuitBreaker", fallbackMethod = "getUserDataFallback")
     public UserResponse GetUserDataByEmail(String email) {
-    String url = "http://USER-SERVICE/users/GetUserInfo?email=" + email;
-    ResponseEntity<UserResponse> response = restTemplate.getForEntity(url, UserResponse.class);
-    return response.getBody();
+        String url = "http://USER-SERVICE/users/GetUserInfo?email=" + email;
+        ResponseEntity<UserResponse> response = restTemplate.getForEntity(url, UserResponse.class);
+        return response.getBody();
     }
 
     public UserResponse getUserDataFallback(String email, Throwable t) {
-    UserResponse fallback = new UserResponse();
-    fallback.setEmail(email);
-    fallback.setName("Unavailable");
-    return fallback;
-}
+        UserResponse fallback = new UserResponse();
+        fallback.setEmail(email);
+        fallback.setName("Unavailable");
+        return fallback;
+    }
 }

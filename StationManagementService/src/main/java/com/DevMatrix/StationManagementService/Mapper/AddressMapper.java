@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import com.DevMatrix.StationManagementService.Dtos.AddressDto;
 import com.DevMatrix.StationManagementService.domain.entity.Address;
 import com.DevMatrix.StationManagementService.domain.entity.ChargingStation;
+import com.DevMatrix.StationManagementService.domain.entity.GeoLocation;
 
 @Component
 public class AddressMapper {
@@ -23,6 +24,8 @@ public class AddressMapper {
         dto.setCity(address.getCity());
         dto.setStreet(address.getStreet());
         dto.setPostalCode(address.getPostalCode());
+        dto.setLatitude(address.getLatitude());
+        dto.setLongitude(address.getLongitude());
         // if (address.getChargingStations() != null)
         //     dto.setChargingStations(
         //         chargingStationMapper.toDtoList(address.getChargingStations())
@@ -30,25 +33,28 @@ public class AddressMapper {
         return dto;
     }
 
-        public Address toEntity(AddressDto dto){
+    public Address toEntity(AddressDto dto){
         Address address = new Address();
         address.setId(null);
         address.setState(dto.getState());
         address.setCity(dto.getCity());
         address.setStreet(dto.getStreet());
         address.setPostalCode(dto.getPostalCode());
+        // address.setGeoLocation(new GeoLocation(dto.getLatitude(),dto.getLongitude()));
         //  if (dto.getChargingStations() != null)
         //     address.setChargingStations(
         //         chargingStationMapper.toEntityList(dto.getChargingStations())
         //     );
         return address;
     }
-        public List<AddressDto> toDtoList(List<Address> addresses) {
+
+    public List<AddressDto> toDtoList(List<Address> addresses) {
         return addresses.stream()
                         .map(this::toDto)
                         .collect(Collectors.toList());
     }
-        public List<Address> toEntityList(List<AddressDto> addresses) {
+
+    public List<Address> toEntityList(List<AddressDto> addresses) {
         return addresses.stream()
                         .map(this::toEntity)
                         .collect(Collectors.toList());

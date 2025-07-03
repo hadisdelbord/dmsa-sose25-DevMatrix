@@ -3,9 +3,6 @@ package com.DevMatrix.StationManagementService.Mapper;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 
@@ -29,31 +26,31 @@ public class ChargingStationMaper {
         return dto;
     }
 
-        public ChargingStation toEntity(ChargingStationDto dto){
+    public ChargingStation toEntity(ChargingStationDto dto){
         ChargingStation station = new ChargingStation();
         station.setId(null);
         station.setUserId(dto.getUserId());
         station.setActivityStatus(dto.getActivityStatus());
         station.setPowerOutput(dto.getPowerOutput());
         station.setName(dto.getName());
-       if (dto.getAddress() != null) {
-        Address address = new Address();
-        address.setId(dto.getAddress().getId()); // only set ID
-        station.setAddress(address); // Hibernate will handle the relationship
-    } else {
-        throw new RuntimeException("Address ID is missing in DTO");
-    }
+        if (dto.getAddress() != null) {
+            Address address = new Address();
+            address.setId(dto.getAddress().getId()); // only set ID
+            station.setAddress(address); // Hibernate will handle the relationship
+        } else {
+            throw new RuntimeException("Address ID is missing in DTO");
+        }
         return station;
     }
 
 
-        public List<ChargingStationDto> toDtoList(List<ChargingStation> stations) {
+    public List<ChargingStationDto> toDtoList(List<ChargingStation> stations) {
         return stations.stream()
                         .map(this::toDto)
                         .collect(Collectors.toList());
     }
 
-        public List<ChargingStation> toEntityList(List<ChargingStationDto> stations) {
+    public List<ChargingStation> toEntityList(List<ChargingStationDto> stations) {
         return stations.stream()
                         .map(this::toEntity)
                         .collect(Collectors.toList());

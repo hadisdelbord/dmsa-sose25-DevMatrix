@@ -2,6 +2,7 @@ package com.DevMatrix.StationManagementService.domain.entity;
 
 import java.util.List;
 
+import io.github.resilience4j.core.lang.Nullable;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,6 +22,7 @@ public class Address {
     @Embedded
     private PostalCode postalCode;
     @Embedded
+    @Nullable
     private GeoLocation location;
 
     @OneToMany(mappedBy = "address")
@@ -104,10 +106,12 @@ public class Address {
     }
 
     public double getLatitude() {
+        if (location == null) return -1;
         return location.getlatitude();
     }
 
     public double getLongitude() {
+        if(location == null) return -1;
         return location.getlongitude();
     }
 }
