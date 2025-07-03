@@ -33,6 +33,19 @@ architecture functional microservice com.DevMatrix.MapService {
         );
 
         ---
+        Convert address to location.
+        @required locationAddressData data used to fetch location point on map
+        ---
+        @endpoints(java::_protocols.rest: "/convert/";)
+         @Spring::_aspects.PostMapping
+        convertAddress(
+            @Spring::_aspects.RequestBody
+            sync in locationAddressData : map::v1.MapService.LocationAddressConvert,
+            @Spring::_aspects.ResponseEntity
+            sync out location : map::v1.MapService.Location
+        );
+
+        ---
         Create or retrieve location by station ID.
         @required locationData data used to fetch location
         ---
@@ -91,6 +104,6 @@ architecture functional microservice com.DevMatrix.MapService {
     deployment technology Eureka::_deployment.EurekaClient {
         service_name = "MAP-SERVICE";
         eureka_server_url = "http://eureka-server:8761/eureka";
-        port = 8080;
+        port = 9080;
     }
 }

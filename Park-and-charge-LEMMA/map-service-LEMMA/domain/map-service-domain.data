@@ -15,6 +15,17 @@ context MapServiceDomain {
         Coordinates coordinates
     }
 // === dTOS ===
+    structure PostalCodeDTO<valueObject> {
+        string value
+    }
+
+    structure LocationAddressConvertDTO<valueObject> {
+         string state,
+         string city,
+         string street,
+         PostalCodeDTO postalCode
+    }
+
     structure LocationCreationDTO<valueObject> {
          long stationId,
          string state,

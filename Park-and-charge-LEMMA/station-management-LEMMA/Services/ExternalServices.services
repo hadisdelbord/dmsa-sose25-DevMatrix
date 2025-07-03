@@ -30,11 +30,46 @@ architecture functional microservice com.DevMatrix.UserService {
     }
 }
 
-// UserResponse structure for external service communication
-structure UserInfo {
-    long userId,
-    string name,
-    string email,
-    string passwordHash,
-    string role
+architecture functional microservice com.DevMatrix.MapService {
+    
+    // Interface for User-related concerns
+    @endpoints(java::_protocols.rest: "/api/v1";)
+    @java::Resilience4jCircuitBreaker
+    interface MapService {
+        ---
+        Get user information by email.
+        @required email User email address.
+        ---
+        @endpoints(java::_protocols.rest: "/convert/";)
+        convertAddress(
+            sync in address : LocationAddress,
+            sync out map : MapLocation,
+        );
+    }
+    
+    // Eureka Service Discovery Configuration
+    deployment technology Eureka::_deployment.EurekaClient {
+        service_name = "MAP-SERVICE";
+        eureka_server_url = "http://eureka-server:8761/eureka";
+        port = 9080;
+    }
+}
+
+structure PostalCode {
+    string value
+}
+
+structure LocationAddress {
+    string state,
+    string city,
+    PostalCode postalCode,
+    string street
+}
+
+// MapResponse structure for external service communication
+structure MapLocation {
+    double lat,
+    double lon,
+    string display_name,
+    string class
 }
