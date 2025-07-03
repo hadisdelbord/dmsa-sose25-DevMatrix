@@ -2,6 +2,9 @@
 
 Welcome to the `dmsa-sose25-DevMatrix` project!
 
+
+You can find project documentation in [Wiki](https://github.com/hadisdelbord/dmsa-sose25-DevMatrix/wiki).
+
 ## Summary
 
 The **Park and Charge Platform** is a smart city mobility solution for electric vehicle (EV) users and private charging station owners.\
