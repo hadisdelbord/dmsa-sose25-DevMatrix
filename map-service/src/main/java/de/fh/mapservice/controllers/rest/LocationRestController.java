@@ -1,5 +1,6 @@
 package de.fh.mapservice.controllers.rest;
 
+import de.fh.mapservice.dtos.LocationAddressConvertDTO;
 import de.fh.mapservice.dtos.LocationCreationDTO;
 import de.fh.mapservice.dtos.LocationDTO;
 import de.fh.mapservice.models.Location;
@@ -39,6 +40,19 @@ public class LocationRestController {
         return new ResponseEntity<>(locationService.getAllLocations(zipCode), HttpStatus.OK);
     }
 
+    @PostMapping(path = {"/convert/"})
+    public ResponseEntity<LocationDTO> convert(@RequestBody LocationAddressConvertDTO locationAddressConvertDTO) {
+        // 1. Convert RequestBody to query
+        String query = geoLocationService.convertLocationAddressToQuery(locationAddressConvertDTO);
+
+        // 2. Convert LocationAddressConvertDTO to LocationDTO
+        LocationDTO locationDTO = geoLocationService.getLocationDTO(query);
+        if (locationDTO == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(locationDTO, HttpStatus.OK);
+    }
+
     @PostMapping(path = {"/location/"})
     public ResponseEntity<Location> location(@RequestBody LocationCreationDTO locationCreationDTO) {
         // 1. Convert RequestBody to query
@@ -51,7 +65,7 @@ public class LocationRestController {
         }
 
         // 3. Convert LocationDTO to Location and save into database
-        Location location = locationService.convertFromDtoToModel(
+        Location location = locationService.convertFromCreationDtoToModel(
                 locationCreationDTO, locationDTO);
 
         // 4. Create location and respond
@@ -72,7 +86,7 @@ public class LocationRestController {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
-            Location location = locationService.convertFromDtoToModel(
+            Location location = locationService.convertFromCreationDtoToModel(
                     locationCreationDTO, locationDTO);
             location.setId(value.getId());
             return new ResponseEntity<>(locationRepository.save(location), HttpStatus.OK);

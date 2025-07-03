@@ -1,27 +1,36 @@
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\Api\AddressController.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\StationManagementServiceApplication.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\Dtos\AvailableSlotDto.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\Services\OfferSlotService.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\Dtos\AddressDto.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\Services\AddressService.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\Services\AddressServiceImp.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\Api\OfferSlotController.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\Dtos\ChargingStationDto.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\domain\entity\ChargingStation.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\Dtos\OfferAndStationDto.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\Services\OfferSlotServiceImp.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\Mapper\AddressMapper.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\Repositories\OfferSlotRepository.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\domain\entity\PostalCode.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\Services\ChargingStationService.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\Repositories\ChargingStationRepository.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\Mapper\ChargingStationMaper.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\Mapper\OfferSlotMapper.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\Services\ChargingStationServiceImp.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\Dtos\OfferSlotDto.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\domain\Enums\ActivityStatus.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\domain\entity\Address.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\Bootstrap\DataInitializer.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\Repositories\IAddressRepository.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\Api\ChargingStationController.java
-E:\FH Dortmund\SS 2025\Design and Modeling CSA\Project Assignments\ParkAndCharge\StationManagementService\src\main\java\com\DevMatrix\StationManagementService\domain\entity\OfferSlot.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/Dtos/OfferSlotDto.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/Services/OfferSlotServiceImp.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/Services/OfferSlotService.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/domain/entity/OfferSlot.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/Dtos/OfferAndStationDto.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/Api/ChargingStationController.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/domain/entity/PostalCode.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/Repositories/IAddressRepository.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/Mapper/AddressMapper.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/Services/AddressService.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/Dtos/ChargingStationDto.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/Services/AddressServiceImp.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/config/RestTemplateConfig.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/security/SecurityConfig.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/Repositories/ChargingStationRepository.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/Dtos/AvailableSlotDto.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/Mapper/ChargingStationMaper.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/domain/entity/GeoLocation.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/Repositories/OfferSlotRepository.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/Dtos/UserResponse.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/Services/userClient.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/security/JwtUtil.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/Dtos/AddressDto.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/Dtos/MapResponseDto.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/domain/entity/Address.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/Api/AddressController.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/domain/entity/ChargingStation.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/Services/ChargingStationServiceImp.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/Services/ChargingStationService.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/Api/OfferSlotController.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/security/JwtAuthorizationFilter.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/domain/Enums/ActivityStatus.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/Services/MapService.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/Bootstrap/DataInitializer.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/Mapper/OfferSlotMapper.java
+/Users/hadis/IdeaProjects/dmsa-sose25-DevMatrix-1/StationManagementService/src/main/java/com/DevMatrix/StationManagementService/StationManagementServiceApplication.java

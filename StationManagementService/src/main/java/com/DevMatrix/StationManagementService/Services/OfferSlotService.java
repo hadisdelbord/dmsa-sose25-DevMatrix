@@ -7,7 +7,6 @@ import java.util.Optional;
 import com.DevMatrix.StationManagementService.Dtos.AvailableSlotDto;
 import com.DevMatrix.StationManagementService.Dtos.OfferAndStationDto;
 import com.DevMatrix.StationManagementService.Dtos.OfferSlotDto;
-import com.DevMatrix.StationManagementService.domain.entity.OfferSlot;
 
 public interface OfferSlotService {
     List<OfferSlotDto> getAll();

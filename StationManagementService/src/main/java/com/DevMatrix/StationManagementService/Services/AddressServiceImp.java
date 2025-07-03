@@ -15,24 +15,34 @@ import com.DevMatrix.StationManagementService.Mapper.AddressMapper;
 import com.DevMatrix.StationManagementService.Repositories.IAddressRepository;
 import com.DevMatrix.StationManagementService.domain.entity.Address;
 import com.DevMatrix.StationManagementService.domain.entity.ChargingStation;
+import com.DevMatrix.StationManagementService.domain.entity.GeoLocation;
 import com.DevMatrix.StationManagementService.domain.entity.PostalCode;
 
 @Service
 public class AddressServiceImp implements AddressService {
+
+    @Autowired
+    private MapService _mapService;
+
     @Autowired
     private IAddressRepository _addressRepository;
+
     @Autowired
     private AddressMapper _mapper;
-    public AddressServiceImp(IAddressRepository addressRepository, AddressMapper mapper){
+
+    public AddressServiceImp(IAddressRepository addressRepository, AddressMapper mapper, MapService mapService){
         this._addressRepository = addressRepository;
         this._mapper = mapper;
+        this._mapService = mapService;
     }
     
-     @Override
+    @Override
     public AddressDto createAddress(AddressDto addressdto) {
         var address = _mapper.toEntity(addressdto);
+        var mapLocation = _mapService.getLocationFromAddress(address);
+        address.setGeoLocation(new GeoLocation(mapLocation.getLatitude(), mapLocation.getLongitude()));
         var savedAddress = _addressRepository.save(address);
-        return _mapper.toDto(savedAddress);
+        return _mapper.toDto(address);
     }
 
     @Override
@@ -44,6 +54,8 @@ public class AddressServiceImp implements AddressService {
             currentAddress.setState(address.getState());
             currentAddress.setCity(address.getCity());
             currentAddress.setStreet(address.getStreet());
+            var mapLocation = _mapService.getLocationFromAddress(address);
+            currentAddress.setGeoLocation(new GeoLocation(mapLocation.getLatitude(), mapLocation.getLongitude()));
             Address savedAddress = _addressRepository.save(currentAddress);
             AddressDto savedAddressDto = _mapper.toDto(savedAddress);
             savedAddressDto.setId(addressdto.getId());

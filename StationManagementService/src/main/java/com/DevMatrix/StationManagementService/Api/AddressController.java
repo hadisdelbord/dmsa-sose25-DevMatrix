@@ -3,7 +3,6 @@ package com.DevMatrix.StationManagementService.Api;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,8 +18,10 @@ import com.DevMatrix.StationManagementService.Services.AddressServiceImp;
 @RestController
 @RequestMapping("/api/Addresses")
 public class AddressController {
+
     private final AddressServiceImp _addressService;
-      public AddressController(AddressServiceImp addressService) {
+
+    public AddressController(AddressServiceImp addressService) {
         this._addressService = addressService;
     }
 

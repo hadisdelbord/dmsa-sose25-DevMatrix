@@ -1,15 +1,23 @@
 package com.DevMatrix.StationManagementService.Dtos;
 
-import com.DevMatrix.StationManagementService.domain.entity.GeoLocation;
 import com.DevMatrix.StationManagementService.domain.entity.PostalCode;
+
+import io.github.resilience4j.core.lang.Nullable;
+import jakarta.persistence.Embedded;
 
 public class AddressDto {
     private long id;
     private String state;
     private String city;
     private String street;
+
+    @Embedded
     private PostalCode postalCode;
+
+    @Nullable
     private Double latitude;
+    
+    @Nullable
     private Double longitude;
     // private List<ChargingStationDto> chargingStations;
 
