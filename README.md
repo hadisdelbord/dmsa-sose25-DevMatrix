@@ -44,7 +44,7 @@ This project uses a **Microservices Architecture** following **Domain-Driven Des
 
 ### Microservices
 
-- **Config Server** – Centralized configuration management.
+- **Config Server** – Centralized configuration management.()
 - **Eureka Server** – Service discovery.
 - **User Service** – Handles authentication and profile management.
 - **Station Service** – Manages stations and availability slots.
@@ -52,6 +52,16 @@ This project uses a **Microservices Architecture** following **Domain-Driven Des
 - **Payment Service** – Manages booking payment data.
 - **Statistics Service** – Aggregates booking and revenue data.
 - **Map Service** – Integrates and displays locations using third-party map APIs.
+
+**Locations**:
+- [Config server](config-server)
+- [Eureka Server](eureka-Server)
+- [User Service](user-service)
+- [Station Service](StationManagementService)
+- [Booking Service](booking-service)
+- [Payment Service](payment-service)
+- [Statistics Service](statistics-service)
+- [Map Service](map-service)
 
 ---
 
