@@ -95,6 +95,13 @@ context StationManagement {
     }
 
     // === DTOS ===
+    structure MapResponseDto <valueObject> {
+        double latitude,
+        double longitude,
+        string displayName,
+        string type
+    }
+
     structure AddressDto <valueObject> {
         long id,
         string state,
